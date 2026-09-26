@@ -1,0 +1,648 @@
+[
+  {
+    "title": "Adobe Photoshop Basics – Part 2",
+    "description": "Photoshop assignment focused on Selection Tools: Marquee tools (Rectangular, Elliptical, Single Row, Single Column), Lasso tools (Lasso, Polygonal, Magnetic), and Object Selection tools (Object Selection, Quick Selection, Magic Wand). Student practices making clean selections and submits a .PSD file.",
+    "subject": "Print Media",
+    "postedBy": "Rajaji K",
+    "postedDate": "2026-08-12",
+    "deadline": "2026-08-19T12:00:00Z",
+    "estimatedEffort": "",
+    "notes": "Type: Assignment · Difficulty: Medium · XP: 90 · Set: Set 8 · AI policy: AI preferred · Course link: https://zs-thriveni-50041722243.development.catalystappsail.in/app/ · Notion page: https://app.notion.com/p/3c080f3eb97281adba6ac76dee5cda7b · ⚠️ No deadline was tracked in Notion for this item — deadline estimated as (Dripped date + 7 days). Edit it in Nexus if you know the real due date.",
+    "status": "not-started",
+    "card": "none",
+    "review": {
+      "feedback": "",
+      "reviewedDate": null
+    },
+    "domain": "Design"
+  },
+  {
+    "title": "Adobe Photoshop Basics – Part 3",
+    "description": "Photoshop assignment covering Crop & Frame tools (Crop, Perspective Crop, Frame), Color Sampling tools (Eyedropper, Color Sampler), and Retouching & Healing tools (Spot Healing Brush, Remove, Healing Brush, Patch, Content-Aware Move, Red Eye). Student practices each tool and submits an organized .PSD file.",
+    "subject": "Print Media",
+    "postedBy": "Rajaji K",
+    "postedDate": "2026-08-12",
+    "deadline": "2026-08-19T12:00:00Z",
+    "estimatedEffort": "",
+    "notes": "Type: Assignment · Difficulty: Medium · XP: 90 · Set: Set 9 · AI policy: AI preferred · Course link: https://zs-thriveni-50041722243.development.catalystappsail.in/app/ · Notion page: https://app.notion.com/p/3c380f3eb9728042b171f285d9315261 · ⚠️ No deadline was tracked in Notion for this item — deadline estimated as (Dripped date + 7 days). Edit it in Nexus if you know the real due date.",
+    "status": "not-started",
+    "card": "none",
+    "review": {
+      "feedback": "",
+      "reviewedDate": null
+    },
+    "domain": "Design"
+  },
+  {
+    "title": "Cards Assignment: Designing a Card and Arranging Them",
+    "description": "Assignment to study how websites use 'cards' to organize repeated content, then extend the student's existing page (with navbar and hero section) with card sections and a footer. Includes observing card-using websites, comparing card elements, inspecting a card's HTML, building two differently-laid-out card sections, testing responsiveness, and adding a footer.",
+    "subject": "HTML/CSS",
+    "postedBy": "Gokula Varna B S",
+    "postedDate": "2026-08-13",
+    "deadline": "2026-08-20T12:00:00Z",
+    "estimatedEffort": "",
+    "notes": "Type: Assignment · Difficulty: Medium · XP: 90 · Set: Set 9 · AI policy: AI preferred · Course link: https://zs-thriveni-50041722243.development.catalystappsail.in/app/ · Notion page: https://app.notion.com/p/3c080f3eb97281d488c8dd859a92135c · ⚠️ No deadline was tracked in Notion for this item — deadline estimated as (Dripped date + 7 days). Edit it in Nexus if you know the real due date.",
+    "status": "not-started",
+    "card": "none",
+    "review": {
+      "feedback": "",
+      "reviewedDate": null
+    },
+    "domain": "Tech"
+  },
+  {
+    "title": "Problem Solving - Assignment 1 - Introduction to Loops",
+    "description": "Assignment to build understanding of loops — what looping is, what for-loops are used for, and how to combine conditionals and loops. Deliverable was answering questions embedded in a linked interactive learning-guide page and exporting the answers as a PDF.",
+    "subject": "Python",
+    "postedBy": "Aarthi V",
+    "postedDate": "2026-08-03",
+    "deadline": "2026-08-10T12:00:00Z",
+    "estimatedEffort": "",
+    "notes": "Type: Assignment · Difficulty: Easy · XP: 60 · Set: Set 7 · AI policy: AI preferred · Course link: https://zs-thriveni-50041722243.development.catalystappsail.in/app/ · Notion page: https://app.notion.com/p/3ba80f3eb97281168ea5f5907dceeccd · ⚠️ No deadline was tracked in Notion for this item — deadline estimated as (Dripped date + 7 days). Edit it in Nexus if you know the real due date.",
+    "status": "completed",
+    "card": "green",
+    "review": {
+      "feedback": "Evaluator 1: \"Explained well. Struggled a bit with deeper concepts like condition checking flow. Keep learning, learn more about functions like range and if statement order.\" Evaluator 2: \"Explained the concepts clearly. Found it a little challenging to understand deeper topics, especially the flow of condition checking. Continue practicing and spend more time understanding functions like 'range()' and the order in which 'if' statements are evaluated.\"",
+      "reviewedDate": "2026-08-03T12:00:00Z"
+    },
+    "domain": "Tech"
+  },
+  {
+    "title": "Problem solving- Logical thinking",
+    "description": "Debugging/logic assignment with 5 Python code snippets, each containing a logical bug the student must identify and fix — including early-return-inside-loop bugs, incorrect indentation causing missing returns, a wrong comparison operator, and incorrect conflict-checking logic in a booking function.",
+    "subject": "Python",
+    "postedBy": "Pavithra S",
+    "postedDate": "2026-08-11",
+    "deadline": "2026-08-18T12:00:00Z",
+    "estimatedEffort": "",
+    "notes": "Type: Assignment · Difficulty: Medium · XP: 90 · Set: Set 8 · AI policy: AI preferred · Course link: https://zs-thriveni-50041722243.development.catalystappsail.in/app/ · Notion page: https://app.notion.com/p/3ba80f3eb97281bdb741ce71eb7de277 · ⚠️ No deadline was tracked in Notion for this item — deadline estimated as (Dripped date + 7 days). Edit it in Nexus if you know the real due date.",
+    "status": "completed",
+    "card": "green",
+    "review": {
+      "feedback": "Evaluator 1: \"Was able to explain existing questions well. When given a new problem, he solved half by himself and used AI assistance to fully solve it.\" Evaluator 2: \"Explained well, can understand and change the code, keep it up.\"",
+      "reviewedDate": "2026-08-17T12:00:00Z"
+    },
+    "domain": "Tech"
+  },
+  {
+    "title": "Circle & Triangle Creative Challenge",
+    "description": "Assignment to improve creativity and visual thinking by turning simple Circle and Triangle shapes into meaningful, original images (no repeated ideas, no simple smileys/emojis), each with a title. Deliverable required 2 completed sheets covering 25 circle & triangle transformations with clear photographs.",
+    "subject": "Design Theory",
+    "postedBy": "Aaron A",
+    "postedDate": "2026-06-23",
+    "deadline": "2026-06-30T12:00:00Z",
+    "estimatedEffort": "",
+    "notes": "Type: Assignment · Difficulty: Medium · XP: 90 · Set: Set 1 · AI policy: AI banned · Course link: https://zs-thriveni-50041722243.development.catalystappsail.in/app/ · Notion page: https://app.notion.com/p/3ba80f3eb9728106adead6d445d5a20c · ⚠️ No deadline was tracked in Notion for this item — deadline estimated as (Dripped date + 7 days). Edit it in Nexus if you know the real due date.",
+    "status": "completed",
+    "card": "green",
+    "review": {
+      "feedback": "First evaluation: \"You've shown good creative thinking with a nice variety of object ideas, and your explanations clearly communicate your concepts. Your drawings are neat and easy to understand. To continue growing, focus on maintaining consistency across all your pieces and push yourself to explore even more imaginative concepts.\" Second evaluation: \"You have explained your ideas nicely through your drawings, showing a good connection between the given shapes and the final objects. Keep building on this strength by improving the finishing, details, and overall consistency of your work.\"",
+      "reviewedDate": "2026-06-27T12:00:00Z"
+    },
+    "domain": "Design"
+  },
+  {
+    "title": "Design Elements - Part 2",
+    "description": "Follow-on Design Elements assignment focused specifically on Texture: explain it, find design examples, identify where it's used, explain effectiveness, and share key learnings in a presentation.",
+    "subject": "Design Theory",
+    "postedBy": "Aaron A",
+    "postedDate": "2026-07-23",
+    "deadline": "2026-07-30T12:00:00Z",
+    "estimatedEffort": "",
+    "notes": "Type: Assignment · Difficulty: Medium · XP: 90 · Set: Set 5 · AI policy: AI preferred · Course link: https://zs-thriveni-50041722243.development.catalystappsail.in/app/ · Notion page: https://app.notion.com/p/3ba80f3eb9728109a865c32fa1d4cb2f · ⚠️ No deadline was tracked in Notion for this item — deadline estimated as (Dripped date + 7 days). Edit it in Nexus if you know the real due date.",
+    "status": "not-started",
+    "card": "none",
+    "review": {
+      "feedback": "",
+      "reviewedDate": null
+    },
+    "domain": "Design"
+  },
+  {
+    "title": "Adobe Photoshop Basics",
+    "description": "Introductory Photoshop assignment to become familiar with the interface: understand Photoshop's purpose/common uses, navigate the interface, learn panel/workspace names, and practice create/open/save/export by following an instructional video. Deliverable: a .PSD file with all practice exercises, demonstrated live on evaluation day.",
+    "subject": "Print Media",
+    "postedBy": "Rajaji K",
+    "postedDate": "2026-08-07",
+    "deadline": "2026-08-14T12:00:00Z",
+    "estimatedEffort": "",
+    "notes": "Type: Assignment · Difficulty: Medium · XP: 90 · Set: Set 7 · AI policy: AI preferred · Course link: https://zs-thriveni-50041722243.development.catalystappsail.in/app/ · Notion page: https://app.notion.com/p/3ba80f3eb972816499cbe6ee91cfd5aa · ⚠️ No deadline was tracked in Notion for this item — deadline estimated as (Dripped date + 7 days). Edit it in Nexus if you know the real due date.",
+    "status": "not-started",
+    "card": "none",
+    "review": {
+      "feedback": "",
+      "reviewedDate": null
+    },
+    "domain": "Design"
+  },
+  {
+    "title": "Design Principles – Part 2",
+    "description": "Follow-on assignment covering three more design principles: Proximity, Balance, Emphasis. Student researched each principle, found 3 real-world design examples per principle, explained effectiveness, and produced a 10-12 slide presentation with research findings, design analysis, and key learnings.",
+    "subject": "Design Theory",
+    "postedBy": "Aaron A",
+    "postedDate": "2026-07-03",
+    "deadline": "2026-07-10T12:00:00Z",
+    "estimatedEffort": "",
+    "notes": "Type: Assignment · Difficulty: Medium · XP: 90 · Set: Set 2 · AI policy: AI preferred · Course link: https://zs-thriveni-50041722243.development.catalystappsail.in/app/ · Notion page: https://app.notion.com/p/3ba80f3eb97281898f9ac52d56ff4aa6 · ⚠️ No deadline was tracked in Notion for this item — deadline estimated as (Dripped date + 7 days). Edit it in Nexus if you know the real due date.",
+    "status": "completed",
+    "card": "green",
+    "review": {
+      "feedback": "Evaluator 1: \"You have done well in this review. Your understanding of the design principles is good, and your involvement in the presentation was clearly visible. To improve further, try to add a little more depth to your explanation and connect your understanding with practical design examples.\" Evaluator 2: \"You've shown a strong understanding of the design principles and your active engagement throughout this review was evident. Focus on adding more depth to your explanations and illustrating your points with simple, practical examples.\"",
+      "reviewedDate": "2026-07-20T12:00:00Z"
+    },
+    "domain": "Design"
+  },
+  {
+    "title": "Week-03-How Websites Guide You with Navbars",
+    "description": "Assignment to observe real website navbars, compare them with AI-generated code, and make small HTML/CSS edits. Student inspects real navbars, plans a navbar for a chosen context, sketches it on paper, prompts AI to generate HTML then CSS, and makes manual edits (brand text, colors, spacing, border) plus a bonus hover effect.",
+    "subject": "HTML/CSS",
+    "postedBy": "Surya B",
+    "postedDate": "2026-07-07",
+    "deadline": "2026-09-12T07:30:00Z",
+    "estimatedEffort": "",
+    "notes": "Type: Assignment · Difficulty: Easy · XP: 60 · Set: Set 3 · AI policy: AI preferred · Course link: https://zs-thriveni-50041722243.development.catalystappsail.in/app/ · Notion page: https://app.notion.com/p/3ba80f3eb972819ebe9fcbecdad2885e",
+    "status": "completed",
+    "card": "green",
+    "review": {
+      "feedback": "Evaluator 1: \"Created a web page to demonstrate the navbar. Able to modify the use case using AI tools and understood what changes the AI tool performed for the use case.\" Evaluator 2: \"Was able to inspect navbars and identify their structure and layout. Planned a navbar with the required links, and generated HTML and CSS using AI based on observations and design specifications. Was also able to refine the changes suggested by the faculty.\"",
+      "reviewedDate": "2026-09-17T12:00:00Z"
+    },
+    "domain": "Tech"
+  },
+  {
+    "title": "Week 01 - Hello World",
+    "description": "Assignment to print 'Hello World' in three languages (Python, Java, JS) at two levels: first using normal strings, then using ASCII codes to print it without storing it as a string.",
+    "subject": "BMM",
+    "postedBy": "Pavithra S",
+    "postedDate": "2026-06-23",
+    "deadline": "2026-06-30T12:00:00Z",
+    "estimatedEffort": "",
+    "notes": "Type: Assignment · Difficulty: Medium · XP: 90 · Set: Set 1 · AI policy: AI preferred · Course link: https://zs-thriveni-50041722243.development.catalystappsail.in/app/ · Notion page: https://app.notion.com/p/3ba80f3eb97281aca6e0cab73ec20ae7 · ⚠️ No deadline was tracked in Notion for this item — deadline estimated as (Dripped date + 7 days). Edit it in Nexus if you know the real due date.",
+    "status": "completed",
+    "card": "green",
+    "review": {
+      "feedback": "Final evaluation: \"You demonstrated a solid grasp of the basics by explaining your code clearly and showing you can refine implementations in both Python and Java with AI assistance. To strengthen your understanding further, focus on deepening your knowledge of how code actually executes step-by-step.\" Earlier evaluation: \"You've got the fundamentals in place — your explanations were clear and well-structured, and you actively engaged during the review. To push further, focus on adding more depth to your explanations; go beyond the surface to show not just what your code does, but why.\"",
+      "reviewedDate": "2026-06-24T12:00:00Z"
+    },
+    "domain": "Tech"
+  },
+  {
+    "title": "Week-04-Hero Sections: Designing the First Impression",
+    "description": "Assignment to study real hero sections (examples from Dropbox, Pitch, Notion, Stripe, Apple), inspect their HTML/CSS structure via DevTools, then design and build a hero section reusing the navbar from the previous assignment. Includes drawing the HTML hierarchy, planning the student's own hero, generating starter HTML/CSS with AI, manual improvements, and testing responsiveness.",
+    "subject": "HTML/CSS",
+    "postedBy": "Gokula Varna B S",
+    "postedDate": "2026-07-22",
+    "deadline": "2026-07-29T12:00:00Z",
+    "estimatedEffort": "",
+    "notes": "Type: Assignment · Difficulty: — · XP: 90 · Set: Set 5 · AI policy: AI preferred · Course link: https://zs-thriveni-50041722243.development.catalystappsail.in/app/ · Notion page: https://app.notion.com/p/3ba80f3eb97281b19316f851f0ad0319 · ⚠️ No deadline was tracked in Notion for this item — deadline estimated as (Dripped date + 7 days). Edit it in Nexus if you know the real due date.",
+    "status": "not-started",
+    "card": "none",
+    "review": {
+      "feedback": "",
+      "reviewedDate": null
+    },
+    "domain": "Tech"
+  },
+  {
+    "title": "Design Principles – Part 1",
+    "description": "Assignment to explore fundamental design principles (Hierarchy, Contrast, Alignment) and their role in effective visual communication. Student explained each principle in their own words, captured original photographs illustrating each, and built a 10-12 slide presentation with research findings and design analysis.",
+    "subject": "Design Theory",
+    "postedBy": "Aaron A",
+    "postedDate": "2026-06-25",
+    "deadline": "2026-07-02T12:00:00Z",
+    "estimatedEffort": "",
+    "notes": "Type: Assignment · Difficulty: Medium · XP: 90 · Set: Set 1 · AI policy: AI preferred · Course link: https://zs-thriveni-50041722243.development.catalystappsail.in/app/ · Notion page: https://app.notion.com/p/3ba80f3eb97281bdba6ad735dfb52010 · ⚠️ No deadline was tracked in Notion for this item — deadline estimated as (Dripped date + 7 days). Edit it in Nexus if you know the real due date.",
+    "status": "completed",
+    "card": "green",
+    "review": {
+      "feedback": "Evaluator 1: \"You have explained the topics in a simple and clear way. The presentation is organized well. Adding a little more detail to the slides will make them more effective.\" Evaluator 2: \"You have covered the required topics clearly and completed the presentation well. The presentation is neat and easy to follow. A little more focus on the slide design would make it better.\"",
+      "reviewedDate": "2026-07-03T12:00:00Z"
+    },
+    "domain": "Design"
+  },
+  {
+    "title": "Week-02-What Even Is A Webpage",
+    "description": "Observational assignment asking the student to visit 3 real websites, inspect their code via DevTools, and build a mental model of how HTML/CSS underlie a visible page — without writing code yet. Deliverable was a written document with notes on 3 websites, AI-assisted explanations to 5 conceptual questions, DevTools notes, and a final short answer to 'What is a webpage?'.",
+    "subject": "HTML/CSS",
+    "postedBy": "Gokula Varna B S",
+    "postedDate": "2026-07-01",
+    "deadline": "2026-07-08T12:00:00Z",
+    "estimatedEffort": "",
+    "notes": "Type: Assignment · Difficulty: Easy · XP: 60 · Set: Set 2 · AI policy: AI preferred · Course link: https://zs-thriveni-50041722243.development.catalystappsail.in/app/ · Notion page: https://app.notion.com/p/3ba80f3eb97281c89f4eed356b75a6f2 · ⚠️ No deadline was tracked in Notion for this item — deadline estimated as (Dripped date + 7 days). Edit it in Nexus if you know the real due date.",
+    "status": "completed",
+    "card": "green",
+    "review": {
+      "feedback": "Evaluator 1: \"Good understanding, a little stuck, but good to go. Keep going!\" Evaluator 2: \"He has done sincere effort to learn the concepts and was able to explain. He was advised to gain a deeper understanding of the concepts by practicing more.\"",
+      "reviewedDate": "2026-07-30T12:00:00Z"
+    },
+    "domain": "Tech"
+  },
+  {
+    "title": "Design Elements - Part 1",
+    "description": "Assignment to understand core design elements (Line, Shape, Colour, Space) and how they improve visual communication. Student explained each in their own words, found 3 design examples per element, identified where used, explained why it works, and built a 10-12 slide presentation.",
+    "subject": "Design Theory",
+    "postedBy": "Aaron A",
+    "postedDate": "2026-07-13",
+    "deadline": "2026-07-20T12:00:00Z",
+    "estimatedEffort": "",
+    "notes": "Type: Assignment · Difficulty: Medium · XP: 90 · Set: Set 4 · AI policy: AI preferred · Course link: https://zs-thriveni-50041722243.development.catalystappsail.in/app/ · Notion page: https://app.notion.com/p/3ba80f3eb97281cb8ae7fde6c43c6568 · ⚠️ No deadline was tracked in Notion for this item — deadline estimated as (Dripped date + 7 days). Edit it in Nexus if you know the real due date.",
+    "status": "in-progress",
+    "card": "none",
+    "review": {
+      "feedback": "",
+      "reviewedDate": null
+    },
+    "domain": "Design"
+  },
+  {
+    "title": "Week 01 (2) - Treasure hunt via Terminal",
+    "description": "Interactive terminal-based treasure hunt teaching command-line navigation on a real remote server via SSH. Student navigates 5 zones, each teaching a new command, collects 4 clue words hidden across zones to reveal a secret phrase, and writes it to a text file.",
+    "subject": "BMM",
+    "postedBy": "Pavithra S",
+    "postedDate": "2026-06-26",
+    "deadline": "2026-07-03T12:00:00Z",
+    "estimatedEffort": "",
+    "notes": "Type: Assignment · Difficulty: Medium · XP: 90 · Set: Set 1 · AI policy: AI preferred · Course link: https://zs-thriveni-50041722243.development.catalystappsail.in/app/ · Notion page: https://app.notion.com/p/3ba80f3eb97281fb974adcca239fb980 · ⚠️ No deadline was tracked in Notion for this item — deadline estimated as (Dripped date + 7 days). Edit it in Nexus if you know the real due date.",
+    "status": "completed",
+    "card": "green",
+    "review": {
+      "feedback": "Evaluator 1: \"You've demonstrated a solid grasp of the terminal commands and worked through the treasure hunt with genuine understanding. Your ability to question your approach and refine your output as you progressed shows good self-awareness and problem-solving instincts.\" Evaluator 2: \"You have genuinely learnt the assignment and you were able to do what we expected of you. You explained well when you were asked to. You were able to question and also improve your output in the upcoming steps. Good job!\"",
+      "reviewedDate": "2026-07-02T12:00:00Z"
+    },
+    "domain": "Tech"
+  },
+  {
+    "title": "Design Elements",
+    "description": "Design Elements assignment focused on Typography: explain its purpose, find design examples of typography use, explain why it works, and share key learnings via a presentation with maximum design-example detail.",
+    "subject": "Design Theory",
+    "postedBy": "Edwin Appolin",
+    "postedDate": "2026-07-28",
+    "deadline": "2026-08-04T12:00:00Z",
+    "estimatedEffort": "",
+    "notes": "Type: Assignment · Difficulty: Medium · XP: 90 · Set: Set 6 · AI policy: AI preferred · Course link: https://zs-thriveni-50041722243.development.catalystappsail.in/app/ · Notion page: https://app.notion.com/p/3ba80f3eb97281ff8b98dc6729a685df · ⚠️ No deadline was tracked in Notion for this item — deadline estimated as (Dripped date + 7 days). Edit it in Nexus if you know the real due date.",
+    "status": "not-started",
+    "card": "none",
+    "review": {
+      "feedback": "",
+      "reviewedDate": null
+    },
+    "domain": "Design"
+  },
+  {
+    "title": "Every Business Has a Story",
+    "description": "Assignment analyzing how everyday businesses actually make money and who they sell to (e.g., Netflix, Amul, a Maggi ad), plus observing differences across Zoho's pricing pages. Deliverable was five completed business case cards plus one ad broken down by brand, payer, user, and target audience.",
+    "subject": "Digital Marketing",
+    "postedBy": "Geetha B",
+    "postedDate": "2026-07-01",
+    "deadline": "2026-07-08T12:00:00Z",
+    "estimatedEffort": "",
+    "notes": "Type: Assignment · Difficulty: Medium · XP: 90 · Set: Set 2 · AI policy: AI preferred · Course link: https://zs-thriveni-50041722243.development.catalystappsail.in/app/ · Notion page: https://app.notion.com/p/3b480f3eb972812db8d0d64484a9fe1c · ⚠️ No deadline was tracked in Notion for this item — deadline estimated as (Dripped date + 7 days). Edit it in Nexus if you know the real due date.",
+    "status": "completed",
+    "card": "green",
+    "review": {
+      "feedback": "Evaluator 1: \"You have understood the concepts well and can explain them clearly. When applying concepts to business scenarios, you tend to miss a few important aspects. Take more time to analyse business cases thoroughly and strengthen your understanding of Zoho's business models.\" Evaluator 2: \"He is able to explain. He is able to relate. Open to learning.\"",
+      "reviewedDate": "2026-07-27T12:00:00Z"
+    },
+    "domain": "Business"
+  },
+  {
+    "title": "Business fundamentals",
+    "description": "A foundational business assignment on distinguishing products from services. The student had to place Zoho's offerings on the product/service spectrum and complete an MCQ survey explaining why the blend of software-as-service matters to customers.",
+    "subject": "Marketing",
+    "postedBy": "Vanitha J",
+    "postedDate": "2026-06-23",
+    "deadline": "2026-06-30T12:00:00Z",
+    "estimatedEffort": "",
+    "notes": "Type: Assignment · Difficulty: Medium · XP: 90 · Set: Set 1 · AI policy: AI preferred · Course link: https://zs-thriveni-50041722243.development.catalystappsail.in/app/ · Notion page: https://app.notion.com/p/3b480f3eb97281599f1fe34e9001d9ac · ⚠️ No deadline was tracked in Notion for this item — deadline estimated as (Dripped date + 7 days). Edit it in Nexus if you know the real due date.",
+    "status": "completed",
+    "card": "green",
+    "review": {
+      "feedback": "Evaluator 1: \"You quickly processed the information and connected it to the discussion with real ease — that ability to relate ideas is a genuine strength. Your work shows solid understanding across the board. Keep building on this foundation as you move forward, and continue looking for those connections between concepts as the material becomes more complex.\" Evaluator 2: \"Your explanation demonstrates strong clarity and thoroughness in covering the fundamentals, which gives your work a solid foundation. As you move forward, remember that marketing decisions require sharper critical thinking — not every approach or claim should be accepted at face value, and developing a more questioning stance will strengthen your business judgment.\"",
+      "reviewedDate": "2026-06-27T12:00:00Z"
+    },
+    "domain": "Business"
+  },
+  {
+    "title": "Part 2 - Business fundamentals",
+    "description": "Follow-up business fundamentals assignment analyzing target markets (Sector/Industry/Market) and comparing on-premise vs on-demand software delivery models, justifying the most suitable delivery model given customer needs and market dynamics.",
+    "subject": "Marketing",
+    "postedBy": "Vanitha J",
+    "postedDate": "2026-06-25",
+    "deadline": "2026-07-02T12:00:00Z",
+    "estimatedEffort": "",
+    "notes": "Type: Assignment · Difficulty: Hard · XP: 130 · Set: Set 1 · AI policy: AI preferred · Course link: https://zs-thriveni-50041722243.development.catalystappsail.in/app/ · Notion page: https://app.notion.com/p/3b480f3eb972816b92b1cb6734e2191d · ⚠️ No deadline was tracked in Notion for this item — deadline estimated as (Dripped date + 7 days). Edit it in Nexus if you know the real due date.",
+    "status": "completed",
+    "card": "green",
+    "review": {
+      "feedback": "First evaluation (in revision): \"You seem to depend too much on notes and memory. Try to understand deeper fundamentals and think freely based on them. Learn the meanings of specific bold-words. Come next time with a complete understanding of the specific assignment you have submitted.\" After revision, panel evaluation: Evaluator 1: \"You communicate your ideas clearly and confidently. At times, preconceived notions can influence your approach to understanding technology. Approach technology with an open mind and evaluate concepts based on evidence and practical understanding rather than assumptions.\" Evaluator 2: \"Good. Threaded learning still needs to be better. Good.\"",
+      "reviewedDate": "2026-07-10T12:00:00Z"
+    },
+    "domain": "Business"
+  },
+  {
+    "title": "Analyze Zo Hotel's Booking Cancellations (2024 Dataset) & Recommend Business Improvements",
+    "description": "Data analysis assignment using Zoho Analytics on a provided hotel booking-cancellations dataset. Requires a dashboard with visualizations (cancellation distribution by hotel type, trends by month, lead time, market segment, ADR patterns), insights on cancellation causes/risky segments/seasonal impacts, and 5-6 recommendations to reduce cancellations and improve retention/revenue.",
+    "subject": "Data Analysis & PM",
+    "postedBy": "Kannan B",
+    "postedDate": "2026-07-13",
+    "deadline": "2026-07-20T12:00:00Z",
+    "estimatedEffort": "",
+    "notes": "Type: Assignment · Difficulty: Hard · XP: 130 · Set: Set 4 · AI policy: AI preferred · Course link: https://zs-thriveni-50041722243.development.catalystappsail.in/app/ · Notion page: https://app.notion.com/p/3b480f3eb972817ca81ac857ba085b5f · ⚠️ No deadline was tracked in Notion for this item — deadline estimated as (Dripped date + 7 days). Edit it in Nexus if you know the real due date.",
+    "status": "not-started",
+    "card": "none",
+    "review": {
+      "feedback": "",
+      "reviewedDate": null
+    },
+    "domain": "Business"
+  },
+  {
+    "title": "Part 1: Marketing Content Addressing…",
+    "description": "Content-writing assignment (Part 1: Marketing Content Addressing Cancellation Reasons) for Zo Hotel. Part A required writing a persuasive UX 'exit prompt' addressing one identified cancellation reason to discourage customers from cancelling; Part B required designing a webpage (hero, problem-solution, and trust-building sections) addressing the major reasons customers cancel bookings.",
+    "subject": "Writing",
+    "postedBy": "Janani Thakshayani",
+    "postedDate": "2026-07-23",
+    "deadline": "2026-09-12T12:30:00Z",
+    "estimatedEffort": "",
+    "notes": "Type: Assignment · Difficulty: Medium · XP: 90 · Set: Set 5 · AI policy: AI preferred · Course link: https://zs-thriveni-50041722243.development.catalystappsail.in/app/ · Notion page: https://app.notion.com/p/3b480f3eb97281858b46c8c7f6dbddde",
+    "status": "submitted",
+    "card": "yellow",
+    "review": {
+      "feedback": "Status: Revision requested. Evaluator 1: \"Do the changes as discussed.\" Evaluator 2: \"He can do better.\"",
+      "reviewedDate": "2026-09-09T12:00:00Z"
+    },
+    "domain": "Business"
+  },
+  {
+    "title": "Part 2: Marketing Content Based on a Season",
+    "description": "Marketing/content-writing assignment where the student, acting as a marketer for Zo Hotels, chose one location and a seasonal or event-driven opportunity (monsoon, festival, viral trend, etc.) and wrote a travel blog connecting that opportunity to the destination, highlighting how Zo Hotels makes travel more convenient and memorable.",
+    "subject": "Writing",
+    "postedBy": "Janani Thakshayani",
+    "postedDate": "2026-07-23",
+    "deadline": "2026-07-30T12:00:00Z",
+    "estimatedEffort": "",
+    "notes": "Type: Assignment · Difficulty: Medium · XP: 90 · Set: Set 5 · AI policy: AI preferred · Course link: https://zs-thriveni-50041722243.development.catalystappsail.in/app/ · Notion page: https://app.notion.com/p/3b480f3eb97281e8a0d9f238dca96408 · ⚠️ No deadline was tracked in Notion for this item — deadline estimated as (Dripped date + 7 days). Edit it in Nexus if you know the real due date.",
+    "status": "completed",
+    "card": "green",
+    "review": {
+      "feedback": "Evaluator 1: \"Good. Do the small changes.\" Evaluator 2: \"He has shown improvement.\"",
+      "reviewedDate": "2026-08-25T12:00:00Z"
+    },
+    "domain": "Business"
+  },
+  {
+    "title": "The Business Behind the Booking",
+    "description": "Introductory client-research assignment where 'Zo Hotel' is presented as the student's first client. The task was to research the hospitality sector, understand how a hotel runs and what breaks when each function fails, and recommend three specific Zoho products that fit Zo Hotel's needs with clear reasoning.",
+    "subject": "Digital Marketing",
+    "postedBy": "Geetha B",
+    "postedDate": "2026-07-10",
+    "deadline": "2026-07-17T12:00:00Z",
+    "estimatedEffort": "",
+    "notes": "Type: Assignment · Difficulty: Medium · XP: 90 · Set: Set 3 · AI policy: AI preferred · Course link: https://zs-thriveni-50041722243.development.catalystappsail.in/app/ · Notion page: https://app.notion.com/p/3b480f3eb97281faa9a9d4234e35a24a · ⚠️ No deadline was tracked in Notion for this item — deadline estimated as (Dripped date + 7 days). Edit it in Nexus if you know the real due date.",
+    "status": "completed",
+    "card": "green",
+    "review": {
+      "feedback": "Evaluator 1: \"Good Work.\" Evaluator 2: \"He was able to explain the concepts.\"",
+      "reviewedDate": "2026-08-18T12:00:00Z"
+    },
+    "domain": "Business"
+  },
+  {
+    "title": "Life Skills Assignment 2",
+    "description": "",
+    "subject": "Life Skills",
+    "postedBy": "Geetha B",
+    "postedDate": "2026-09-17",
+    "deadline": "2026-09-27T00:00:00Z",
+    "estimatedEffort": "",
+    "notes": "Type: Assignment · Difficulty: Medium · XP: 90 · Set: Set 13 · AI policy: AI preferred · Notion page: https://app.notion.com/p/3de80f3eb97281b287e2e29926ee2ba4",
+    "status": "not-started",
+    "card": "none",
+    "review": {
+      "feedback": "",
+      "reviewedDate": null
+    },
+    "domain": "Life Skills"
+  },
+  {
+    "title": "Life Skills Assignment 1",
+    "description": "",
+    "subject": "Life Skills",
+    "postedBy": "Geetha B",
+    "postedDate": "2026-09-17",
+    "deadline": "2026-09-27T00:00:00Z",
+    "estimatedEffort": "",
+    "notes": "Type: Assignment · Difficulty: Medium · XP: 90 · Set: Set 13 · AI policy: AI preferred · Notion page: https://app.notion.com/p/3de80f3eb97281bdba3ee648e7c400a4",
+    "status": "not-started",
+    "card": "none",
+    "review": {
+      "feedback": "",
+      "reviewedDate": null
+    },
+    "domain": "Life Skills"
+  },
+  {
+    "title": "Trace a request",
+    "description": "Exercise to understand the request-response flow of a web application: pick one real action in a product the student uses, trace it from user tap to the on-screen result (using browser DevTools Network tab), then write it up twice — once in plain everyday words, and once using proper developer/jargon terms (client, server, API, HTTP request/response, DOM, JSON, etc.).",
+    "subject": "BMM",
+    "postedBy": "Pavithra S",
+    "postedDate": "2026-09-14",
+    "deadline": "2026-09-21T12:00:00Z",
+    "estimatedEffort": "",
+    "notes": "Type: Assignment · Difficulty: Medium · XP: 90 · Set: Set 13 · AI policy: AI preferred · Course link: https://zs-thriveni-50041722243.development.catalystappsail.in/app/ · Notion page: https://app.notion.com/p/3db80f3eb972810d87d1caf8cb4fdd17 · ⚠️ No deadline was tracked in Notion for this item — deadline estimated as (Dripped date + 7 days). Edit it in Nexus if you know the real due date.",
+    "status": "not-started",
+    "card": "none",
+    "review": {
+      "feedback": "",
+      "reviewedDate": null
+    },
+    "domain": "Tech"
+  },
+  {
+    "title": "Adobe Photoshop – Clone & Eraser Tools",
+    "description": "AI-assisted Photoshop assignment using Claude or Codex to guide edits with Clone/Pattern Stamp tools (remove unwanted objects, recreate surrounding texture) and Eraser tools (Eraser, Background Eraser, Magic Eraser) to produce a clean image with transparent background. Deliverables: an editable .PSD, 2 final edited images, 1 transparent PNG, and saved AI prompts used.",
+    "subject": "Print Media",
+    "postedBy": "Rajaji K",
+    "postedDate": "2026-08-24",
+    "deadline": "2026-08-31T12:00:00Z",
+    "estimatedEffort": "",
+    "notes": "Type: Assignment · Difficulty: Medium · XP: 90 · Set: Set 10 · AI policy: AI preferred · Course link: https://zs-thriveni-50041722243.development.catalystappsail.in/app/ · Notion page: https://app.notion.com/p/3d780f3eb972811ebd66fe5407eb6f83 · ⚠️ No deadline was tracked in Notion for this item — deadline estimated as (Dripped date + 7 days). Edit it in Nexus if you know the real due date.",
+    "status": "not-started",
+    "card": "none",
+    "review": {
+      "feedback": "",
+      "reviewedDate": null
+    },
+    "domain": "Design"
+  },
+  {
+    "title": "Adobe for Creativity — Recreate & Resize",
+    "description": "Assignment connecting the 'Adobe for Creativity' Claude integration with Photoshop: study a reference ad image, use Claude to help recreate it keeping text/design elements editable, then resize it to two output sizes (1080x1080 and 1920x1080 px at 300 PPI) using Artboards, Transform, Type, and Pen tools. Deliverables: 1 editable PSD with 2 artboards, 2 final JPGs, 1 transparent PNG cutout.",
+    "subject": "Print Media",
+    "postedBy": "Aaron A",
+    "postedDate": "2026-08-31",
+    "deadline": "2026-09-07T12:00:00Z",
+    "estimatedEffort": "",
+    "notes": "Type: Assignment · Difficulty: Medium · XP: 90 · Set: Set 11 · AI policy: AI preferred · Course link: https://zs-thriveni-50041722243.development.catalystappsail.in/app/ · Notion page: https://app.notion.com/p/3d780f3eb97281c391e5c31aab206e76 · ⚠️ No deadline was tracked in Notion for this item — deadline estimated as (Dripped date + 7 days). Edit it in Nexus if you know the real due date.",
+    "status": "not-started",
+    "card": "none",
+    "review": {
+      "feedback": "",
+      "reviewedDate": null
+    },
+    "domain": "Design"
+  },
+  {
+    "title": "Act as a Zoho CRM Administrator – Set Up a Sales CRM for a Business - Part A",
+    "description": "Role-play assignment where the student acts as a Zoho CRM Administrator for a small/medium business of their choosing, configuring Zoho CRM Enterprise Edition to manage the full day-to-day sales process: a business overview, CRM configuration (roles, profiles, module customizations), and sample data (leads, contacts, accounts, deals, activities) demonstrating an end-to-end customer journey.",
+    "subject": "Data Analysis & PM",
+    "postedBy": "Vijaya Ruby Malan",
+    "postedDate": "2026-08-10",
+    "deadline": "2026-09-13T13:30:00Z",
+    "estimatedEffort": "",
+    "notes": "Type: Assignment · Difficulty: Medium · XP: 90 · Set: Set 8 · AI policy: AI preferred · Course link: https://zs-thriveni-50041722243.development.catalystappsail.in/app/ · Notion page: https://app.notion.com/p/3d280f3eb972815396edd78c1e38f3ca",
+    "status": "completed",
+    "card": "green",
+    "review": {
+      "feedback": "Evaluator panel showed a green/passing result for this submission, though the detailed written comments weren't legible in the captured screenshot.",
+      "reviewedDate": null
+    },
+    "domain": "Business"
+  },
+  {
+    "title": "Javascript Intro: Mini Bill Splitter",
+    "description": "Task to build a simple Bill Splitter web app using only HTML, CSS, and vanilla JavaScript to learn JS basics like functions, event listeners, variables, and selectors. The app lets users enter a bill amount, choose number of people, optionally add a tip percentage (with preset buttons), calculate each person's share, and display results dynamically without a page refresh.",
+    "subject": "HTML/CSS",
+    "postedBy": "Gokula Varna B S",
+    "postedDate": "2026-08-11",
+    "deadline": "2026-08-18T12:00:00Z",
+    "estimatedEffort": "",
+    "notes": "Type: Assignment · Difficulty: Medium · XP: 90 · Set: Set 10 · AI policy: AI preferred · Course link: https://zs-thriveni-50041722243.development.catalystappsail.in/app/ · Notion page: https://app.notion.com/p/3d280f3eb9728177afdfdccc4eb57a8c · ⚠️ No deadline was tracked in Notion for this item — deadline estimated as (Dripped date + 7 days). Edit it in Nexus if you know the real due date.",
+    "status": "not-started",
+    "card": "none",
+    "review": {
+      "feedback": "",
+      "reviewedDate": null
+    },
+    "domain": "Tech"
+  },
+  {
+    "title": "Onam Quiz Apps",
+    "description": "Assignment to host a previously-built Onam quiz app so it can be shared with peers. Since the quiz is a static HTML page, students were instructed to temporarily host it on Netlify and submit the resulting link.",
+    "subject": "HTML/CSS",
+    "postedBy": "Gokula Varna B S",
+    "postedDate": "2026-08-09",
+    "deadline": "2026-08-16T12:00:00Z",
+    "estimatedEffort": "",
+    "notes": "Type: Assignment · Difficulty: Easy · XP: 60 · Set: Set 10 · AI policy: AI preferred · Course link: https://zs-thriveni-50041722243.development.catalystappsail.in/app/ · Notion page: https://app.notion.com/p/3d280f3eb972818089b5c9097654c340 · ⚠️ No deadline was tracked in Notion for this item — deadline estimated as (Dripped date + 7 days). Edit it in Nexus if you know the real due date.",
+    "status": "completed",
+    "card": "green",
+    "review": {
+      "feedback": "Evaluator 1: \"Good Nice UI.\" Evaluator 2: \"Nice UI. Nice Idea.\"",
+      "reviewedDate": "2026-08-26T12:00:00Z"
+    },
+    "domain": "Tech"
+  },
+  {
+    "title": "Part B - Act as a Zoho CRM Administrator – Set Up a Sales CRM for a Business",
+    "description": "Continuation of the CRM administrator role-play (customizations and workflow automations). Building on the Part A CRM setup, the student must customize layouts/fields/module settings and configure two working Workflow Rules that automate real sales-process problems, then demonstrate the customizations and their business rationale.",
+    "subject": "Data Analysis & PM",
+    "postedBy": "Vijaya Ruby Malan",
+    "postedDate": "2026-08-21",
+    "deadline": "2026-08-28T12:00:00Z",
+    "estimatedEffort": "",
+    "notes": "Type: Assignment · Difficulty: Medium · XP: 90 · Set: Set 9 · AI policy: AI preferred · Course link: https://zs-thriveni-50041722243.development.catalystappsail.in/app/ · Notion page: https://app.notion.com/p/3d280f3eb97281a2acd7dc4ab1c524a5 · ⚠️ No deadline was tracked in Notion for this item — deadline estimated as (Dripped date + 7 days). Edit it in Nexus if you know the real due date.",
+    "status": "not-started",
+    "card": "none",
+    "review": {
+      "feedback": "",
+      "reviewedDate": null
+    },
+    "domain": "Business"
+  },
+  {
+    "title": "Funnel and Email Marketing",
+    "description": "Digital marketing assignment on the five stages of the marketing funnel (Awareness, Interest, Desire, Action, Retention). The student chose a Zoho product, described a target audience, wrote one email per applicable funnel stage, and identified/explained the one funnel stage not suited to email along with a recommended alternative channel.",
+    "subject": "Digital Marketing",
+    "postedBy": "Geetha B",
+    "postedDate": "2026-08-18",
+    "deadline": "2026-08-25T12:00:00Z",
+    "estimatedEffort": "",
+    "notes": "Type: Assignment · Difficulty: Medium · XP: 90 · Set: Set 11 · AI policy: AI preferred · Course link: https://zs-thriveni-50041722243.development.catalystappsail.in/app/ · Notion page: https://app.notion.com/p/3d280f3eb97281b288fff2a329edf479 · ⚠️ No deadline was tracked in Notion for this item — deadline estimated as (Dripped date + 7 days). Edit it in Nexus if you know the real due date.",
+    "status": "completed",
+    "card": "green",
+    "review": {
+      "feedback": "Evaluator 1: \"Good concept understanding. Learn about Zoho CRM's retention strategies.\" Evaluator 2: \"He was able to explain and can do better.\"",
+      "reviewedDate": "2026-09-08T12:00:00Z"
+    },
+    "domain": "Business"
+  },
+  {
+    "title": "The Golden Circle - Part 1",
+    "description": "Assignment based on Simon Sinek's 'Start With Why' framework. The student watched a reference video and, without using AI, mapped the WHY/HOW/WHAT golden circle for a real admired brand (other than Zoho), then wrote their own WHY for a conceptualized business idea, presented as a slide deck.",
+    "subject": "Marketing",
+    "postedBy": "Vijaya Ruby Malan",
+    "postedDate": "2026-07-28",
+    "deadline": "2026-08-04T12:00:00Z",
+    "estimatedEffort": "",
+    "notes": "Type: Assignment · Difficulty: Medium · XP: 90 · Set: Set 6 · AI policy: AI not preferred · Course link: https://zs-thriveni-50041722243.development.catalystappsail.in/app/ · Notion page: https://app.notion.com/p/3d280f3eb97281c180ffe185d5960b51 · ⚠️ No deadline was tracked in Notion for this item — deadline estimated as (Dripped date + 7 days). Edit it in Nexus if you know the real due date.",
+    "status": "completed",
+    "card": "green",
+    "review": {
+      "feedback": "Evaluator 1: \"Good understanding of the subject. Dig a little deeper into Zoho's 'why', the purpose and philosophy that drive the company.\" Evaluator 2: \"Good attempt.\"",
+      "reviewedDate": "2026-09-07T12:00:00Z"
+    },
+    "domain": "Business"
+  },
+  {
+    "title": "Build Something That Does Stuff",
+    "description": "Open-ended assignment to build a small web app (HTML + CSS + vanilla JavaScript only, no frameworks) that does three things: gets something from an external free API (weather, dictionary, currency, trivia, movies, Pokémon, Wikipedia, etc.), remembers something using browser storage, and reacts to the passage of time (e.g. a countdown or elapsed-time display). Students pick their own app idea as long as it feels like one cohesive small app.",
+    "domain": "Tech",
+    "subject": "JavaScript",
+    "postedBy": "Surya B",
+    "postedDate": "2026-09-19",
+    "deadline": "2026-09-28T23:59:00Z",
+    "estimatedEffort": "",
+    "notes": "Type: Assignment · Difficulty: Medium · AI policy: AI preferred · Vacation project — reuses navbars + hero section work. Part of a linked three-part capstone: build the app (this one) → design its branding (\"Web App – Branding & Promotional Design\") → launch it (\"Launch Day\").",
+    "status": "not-started",
+    "card": "none",
+    "review": {
+      "feedback": "",
+      "reviewedDate": null
+    }
+  },
+  {
+    "title": "Web App – Branding & Promotional Design",
+    "description": "Assignment to create a visual identity and promotional materials for the student's own web-app idea (the same idea from the linked tech assignment), using Adobe Photoshop and/or Illustrator with Claude or Codex as a creative partner. Three tasks: an original App Logo (editable vector), an A4 promotional flyer in CMYK for print, and a 1200x700px RGB blog banner, all keeping a consistent visual style.",
+    "domain": "Design",
+    "subject": "Print Media",
+    "postedBy": "Aaron A",
+    "postedDate": "2026-09-21",
+    "deadline": "2026-09-28T23:59:00Z",
+    "estimatedEffort": "",
+    "notes": "Type: Assignment · Difficulty: Medium · AI policy: AI preferred · Vacation project. Part of a linked three-part capstone: build the app (\"Build Something That Does Stuff\") → design its branding (this one) → launch it (\"Launch Day\").",
+    "status": "not-started",
+    "card": "none",
+    "review": {
+      "feedback": "",
+      "reviewedDate": null
+    }
+  },
+  {
+    "title": "Launch Day",
+    "description": "A capstone-style 'go-to-market' assignment that picks up directly from the tech-domain app-building assignment: the app now needs to be launched. The student defines who the app is for and what that person currently does without it, then chooses which real-launch jobs to execute (Marketing, Sales, Pricing, Support, PR, Partners, Marketplace, Community, or a custom one) and produces launch materials for those chosen jobs.",
+    "domain": "Business",
+    "subject": "Marketing",
+    "postedBy": "Geetha B",
+    "postedDate": "2026-09-19",
+    "deadline": "2026-09-28T23:59:00Z",
+    "estimatedEffort": "",
+    "notes": "Type: Assignment · Difficulty: Medium · AI policy: AI preferred · Vacation project. Final part of a linked three-part capstone: build the app (\"Build Something That Does Stuff\") → design its branding (\"Web App – Branding & Promotional Design\") → launch it (this one).",
+    "status": "not-started",
+    "card": "none",
+    "review": {
+      "feedback": "",
+      "reviewedDate": null
+    }
+  }
+]

@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexus — Understand. Prioritize. Improve. Progress.</title>
+<meta name="description" content="Nexus is a persistent, AI-assisted academic assignment mentor.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============================= -->
+<!-- TOAST CONTAINER (global)      -->
+<!-- ============================= -->
+<div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+<!-- ============================= -->
+<!-- WELCOME / FIRST-TIME SCREEN   -->
+<!-- ============================= -->
+<div id="welcome-screen" class="welcome-screen hidden">
+  <div class="welcome-card">
+    <div class="welcome-logo">✳ Nexus</div>
+    <h1>Welcome to Nexus</h1>
+    <p class="welcome-sub">Your AI-assisted academic mentor. Let's set a few things up — it only takes a moment.</p>
+
+    <form id="welcome-form">
+      <div class="form-field">
+        <label for="welcome-name">What should we call you?</label>
+        <input type="text" id="welcome-name" name="name" placeholder="Your name" autocomplete="off">
+      </div>
+
+      <div class="form-field">
+        <label for="welcome-language">Preferred language</label>
+        <select id="welcome-language" name="language">
+          <option value="en">English</option>
+          <option value="ta">Tamil</option>
+          <option value="hi">Hindi</option>
+        </select>
+      </div>
+
+      <div class="form-field">
+        <label>Theme</label>
+        <div class="theme-choice-group" role="radiogroup" aria-label="Theme preference">
+          <label class="theme-choice">
+            <input type="radio" name="theme" value="dark" checked>
+            <span class="theme-swatch theme-swatch-dark" aria-hidden="true"></span>
+            <span>Arcade Purple (Dark)</span>
+          </label>
+          <label class="theme-choice">
+            <input type="radio" name="theme" value="light">
+            <span class="theme-swatch theme-swatch-light" aria-hidden="true"></span>
+            <span>Plan-Arcadia (Light)</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-field form-field-inline">
+        <label for="welcome-gamification">Enable gamification (XP, streaks, badges)</label>
+        <input type="checkbox" id="welcome-gamification" name="gamification" checked>
+      </div>
+
+      <div class="welcome-actions">
+        <button type="button" id="welcome-skip-btn" class="btn btn-ghost">Skip for now</button>
+        <button type="submit" class="btn btn-primary">Get started</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============================= -->
+<!-- APP SHELL                     -->
+<!-- ============================= -->
+<div id="app" class="app hidden">
+
+  <header class="app-header">
+    <div class="header-left">
+      <span class="logo">✳ Nexus</span>
+    </div>
+
+    <div class="header-search">
+      <label for="search-input" class="sr-only">Search assignments</label>
+      <input type="search" id="search-input" placeholder="Search assignments, subjects, feedback…" autocomplete="off">
+    </div>
+
+    <nav class="header-right" aria-label="Primary">
+      <button id="nav-progress-btn" class="icon-btn" aria-label="View progress and history" title="Progress">
+        <span aria-hidden="true">📈</span>
+      </button>
+      <button id="theme-toggle-btn" class="icon-btn" aria-label="Toggle dark or light theme" title="Toggle theme">
+        <span aria-hidden="true">🌙</span>
+      </button>
+      <button id="settings-btn" class="icon-btn" aria-label="Open settings" title="Settings">
+        <span aria-hidden="true">⚙</span>
+      </button>
+    </nav>
+  </header>
+
+  <!-- ============================= -->
+  <!-- DASHBOARD VIEW                -->
+  <!-- ============================= -->
+  <main id="view-dashboard" class="view">
+    <section class="greeting">
+      <h1 id="greeting-text">Good evening.</h1>
+      <p id="greeting-sub">Here's what needs your attention.</p>
+    </section>
+
+    <section class="summary-cards" id="summary-cards" aria-label="Assignment statistics"></section>
+
+    <section class="next-move-section" id="next-move-section">
+      <div class="next-move-card" id="next-move-card"></div>
+    </section>
+
+    <section class="assignments-section">
+      <div class="assignments-toolbar">
+        <div class="filter-tabs" id="filter-tabs" role="tablist" aria-label="Filter assignments">
+          <button class="filter-tab active" data-filter="all" role="tab" aria-selected="true">All</button>
+          <button class="filter-tab" data-filter="active" role="tab" aria-selected="false">Active</button>
+          <button class="filter-tab" data-filter="due-soon" role="tab" aria-selected="false">Due Soon</button>
+          <button class="filter-tab" data-filter="review-required" role="tab" aria-selected="false">Review Required</button>
+          <button class="filter-tab" data-filter="completed" role="tab" aria-selected="false">Completed</button>
+          <button class="filter-tab" data-filter="overdue" role="tab" aria-selected="false">Overdue</button>
+          <button class="filter-tab" data-filter="locked" role="tab" aria-selected="false">🔒 Locked</button>
+        </div>
+
+        <div class="toolbar-right">
+          <label for="sort-select" class="sr-only">Sort assignments</label>
+          <select id="sort-select">
+            <option value="deadline">Sort: Deadline</option>
+            <option value="recently-added">Sort: Recently added</option>
+            <option value="recently-updated">Sort: Recently updated</option>
+            <option value="status">Sort: Status</option>
+          </select>
+          <button id="add-assignment-btn" class="btn btn-primary">+ Add Assignment</button>
+        </div>
+      </div>
+
+      <div id="assignment-list" class="assignment-list"></div>
+
+      <div id="empty-state" class="empty-state hidden">
+        <div class="empty-state-icon" aria-hidden="true">🗂️</div>
+        <h2>Your workspace is empty</h2>
+        <p>Your assignments will appear here.</p>
+        <button id="empty-add-btn" class="btn btn-primary">+ Add Your First Assignment</button>
+        <button id="empty-demo-btn" class="btn btn-ghost">Load Demo Data</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============================= -->
+  <!-- ASSIGNMENT DETAIL VIEW        -->
+  <!-- ============================= -->
+  <main id="view-detail" class="view hidden">
+    <button id="back-to-dashboard-btn" class="btn btn-ghost back-btn">← Back to dashboard</button>
+    <div id="detail-content"></div>
+  </main>
+
+  <!-- ============================= -->
+  <!-- HISTORY / PROGRESS VIEW       -->
+  <!-- ============================= -->
+  <main id="view-history" class="view hidden">
+    <button id="back-to-dashboard-btn-2" class="btn btn-ghost back-btn">← Back to dashboard</button>
+    <h1>Your progress</h1>
+    <div id="history-content"></div>
+  </main>
+
+</div>
+
+<!-- ============================= -->
+<!-- MODAL: ADD / EDIT ASSIGNMENT  -->
+<!-- ============================= -->
+<div id="modal-assignment" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modal-assignment-title">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modal-assignment-title">Add Assignment</h2>
+      <button class="modal-close-btn" data-close-modal="modal-assignment" aria-label="Close">✕</button>
+    </div>
+    <form id="assignment-form" class="modal-body">
+      <input type="hidden" id="assignment-id-field">
+      <div class="form-field">
+        <label for="field-title">Title *</label>
+        <input type="text" id="field-title" required maxlength="120">
+      </div>
+      <div class="form-field">
+        <label for="field-description">Description</label>
+        <textarea id="field-description" rows="3" maxlength="2000"></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-field">
+          <label for="field-domain">Domain</label>
+          <input type="text" id="field-domain" maxlength="40" placeholder="e.g. Business, Design, Tech" list="domain-suggestions">
+          <datalist id="domain-suggestions"></datalist>
+        </div>
+        <div class="form-field">
+          <label for="field-subject">Subject / category</label>
+          <input type="text" id="field-subject" maxlength="60">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-field">
+          <label for="field-posted-by">Posted by</label>
+          <input type="text" id="field-posted-by" maxlength="60">
+        </div>
+        <div class="form-field">
+          <label for="field-posted-date">Posted date</label>
+          <input type="date" id="field-posted-date">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-field">
+          <label for="field-deadline">Deadline *</label>
+          <input type="datetime-local" id="field-deadline" required>
+        </div>
+        <div class="form-field">
+          <label for="field-effort">Estimated effort (optional)</label>
+          <input type="text" id="field-effort" placeholder="e.g. 3 hours" maxlength="40">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-field">
+          <label for="field-status">Status</label>
+          <select id="field-status">
+            <option value="not-started">Not started</option>
+            <option value="in-progress">In progress</option>
+            <option value="submitted">Submitted</option>
+            <option value="completed">Completed</option>
+            <option value="locked">🔒 Locked</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-field">
+        <label for="field-notes">Notes (optional)</label>
+        <textarea id="field-notes" rows="2" maxlength="1000"></textarea>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" data-close-modal="modal-assignment">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save assignment</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============================= -->
+<!-- MODAL: REVIEW                 -->
+<!-- ============================= -->
+<div id="modal-review" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modal-review-title">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modal-review-title">Record review</h2>
+      <button class="modal-close-btn" data-close-modal="modal-review" aria-label="Close">✕</button>
+    </div>
+    <form id="review-form" class="modal-body">
+      <div class="form-field">
+        <label>Card status</label>
+        <div class="card-choice-group" role="radiogroup" aria-label="Review card status">
+          <label class="card-choice card-choice-green">
+            <input type="radio" name="review-card" value="green"> <span>🟢 Green</span>
+          </label>
+          <label class="card-choice card-choice-yellow">
+            <input type="radio" name="review-card" value="yellow"> <span>🟡 Yellow</span>
+          </label>
+          <label class="card-choice card-choice-red">
+            <input type="radio" name="review-card" value="red"> <span>🔴 Red</span>
+          </label>
+          <label class="card-choice card-choice-none">
+            <input type="radio" name="review-card" value="none" checked> <span>⚪ No review yet</span>
+          </label>
+        </div>
+      </div>
+      <div class="form-field">
+        <label for="field-review-feedback">Reviewer feedback</label>
+        <textarea id="field-review-feedback" rows="5" maxlength="3000" placeholder="Paste or type the reviewer's feedback here…"></textarea>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" data-close-modal="modal-review">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save review</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============================= -->
+<!-- MODAL: SETTINGS               -->
+<!-- ============================= -->
+<div id="modal-settings" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modal-settings-title">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modal-settings-title">Settings</h2>
+      <button class="modal-close-btn" data-close-modal="modal-settings" aria-label="Close">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <div class="settings-group">
+        <h3>Profile</h3>
+        <div class="form-field">
+          <label for="settings-name">Your name</label>
+          <input type="text" id="settings-name" maxlength="60">
+        </div>
+        <div class="form-field">
+          <label for="settings-language">Preferred language</label>
+          <select id="settings-language">
+            <option value="en">English</option>
+            <option value="ta">Tamil</option>
+            <option value="hi">Hindi</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <h3>Appearance</h3>
+        <div class="form-field form-field-inline">
+          <label for="settings-theme-toggle">Use dark mode (Arcade Purple)</label>
+          <input type="checkbox" id="settings-theme-toggle">
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <h3>Gamification</h3>
+        <div class="form-field form-field-inline">
+          <label for="settings-gamification-toggle">Enable XP, levels, streaks and badges</label>
+          <input type="checkbox" id="settings-gamification-toggle">
+        </div>
+        <div id="settings-gamification-summary" class="gamification-summary"></div>
+      </div>
+
+      <div class="settings-group">
+        <h3>Mentor AI (Google Gemini)</h3>
+        <p class="settings-hint">
+          Your key is stored only in this browser's local storage so the mentor can call Gemini directly from your device.
+          <strong>Never paste a production or billing-enabled key into any client-side app</strong> — for a real deployment this call
+          must go through a server-side proxy that keeps the key secret. See <code>README.md</code> for details.
+        </p>
+        <div class="form-field">
+          <label for="settings-api-key">Gemini API key</label>
+          <input type="password" id="settings-api-key" autocomplete="off" placeholder="Paste your Gemini API key">
+        </div>
+        <button type="button" id="settings-clear-key-btn" class="btn btn-ghost btn-small">Remove saved key</button>
+      </div>
+
+      <div class="settings-group">
+        <h3>Data</h3>
+        <div class="settings-data-actions">
+          <button type="button" id="settings-demo-btn" class="btn btn-secondary">Load Demo Data</button>
+          <button type="button" id="settings-import-btn" class="btn btn-secondary">Import Assignment Data</button>
+          <input type="file" id="settings-import-input" accept="application/json" class="hidden">
+          <button type="button" id="settings-export-btn" class="btn btn-secondary">Export My Data</button>
+          <button type="button" id="settings-remove-sample-btn" class="btn btn-ghost">Remove Sample Data</button>
+          <button type="button" id="settings-clear-btn" class="btn btn-danger">Clear All Data</button>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-primary" data-close-modal="modal-settings" id="settings-done-btn">Done</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================= -->
+<!-- MODAL: GENERIC CONFIRM        -->
+<!-- ============================= -->
+<div id="modal-confirm" class="modal-overlay hidden" role="alertdialog" aria-modal="true" aria-labelledby="modal-confirm-title">
+  <div class="modal modal-small">
+    <div class="modal-header">
+      <h2 id="modal-confirm-title">Are you sure?</h2>
+      <button class="modal-close-btn" data-close-modal="modal-confirm" aria-label="Close">✕</button>
+    </div>
+    <div class="modal-body">
+      <p id="modal-confirm-message"></p>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" data-close-modal="modal-confirm">Cancel</button>
+        <button type="button" id="modal-confirm-action-btn" class="btn btn-danger">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
