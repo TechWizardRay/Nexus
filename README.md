@@ -23,16 +23,30 @@ Then visit `http://localhost:8000`.
 ## Files
 
 ```
-index.html   — markup for every screen (dashboard, detail, progress, modals)
+index.html   — markup for every screen (dashboard, detail, progress, timer, settings, onboarding)
 style.css    — both themes (dark "Arcade Purple" / light "Plan-Arcadia") + layout
 script.js    — all application logic, organized into commented sections
 assets/      — favicon
 ```
 
+## First run
+
+The first time you open Nexus, a short wizard asks for your name and theme, walks you
+through adding one real assignment of your own (no canned demo data), and offers an
+optional Gemini API key step. A quick interactive tour then points out search,
+grouping, Progress, Study Timer, and Settings — replay it anytime from
+**Settings → Replay the quick tour**.
+
+Assignments are organized however you use them: by **Subject/course**, by a broader
+**Category**, or not grouped at all — switch anytime from the dashboard toolbar. Add new
+subjects ahead of time from **Settings → Subjects & courses**, or just type a new one
+into the assignment form.
+
 ## Setting up the AI mentor (Google Gemini)
 
-1. Get a Gemini API key from [Google AI Studio](https://aistudio.google.com/apikey).
-2. Open Nexus → **Settings** → paste the key into **Gemini API key**.
+1. Get a Gemini API key from [Google AI Studio](https://aistudio.google.com/apikey) —
+   linked directly from the onboarding wizard and from Settings.
+2. Paste it into **Settings → Gemini API key** (or during onboarding).
 3. Open any assignment and click **Analyze with Mentor**.
 
 ### ⚠️ Security note (read this before deploying anywhere public)
@@ -58,8 +72,10 @@ your own browser — nothing is sent anywhere except the specific assignment tex
 review feedback needed for the Gemini call you trigger. Clearing your browser data or
 using "Clear All Data" in Settings removes it for good.
 
-## Demo data
+## Study Timer
 
-Settings → **Load Demo Data** populates a few sample assignments (clearly tagged
-"Sample") so you can see every feature without typing anything in. Settings → **Remove
-Sample Data** takes them back out without touching your own assignments.
+A separate section (sidebar → **Study Timer**) for focused study sessions: pick a
+15/25/45/60-minute preset and a tree grows through visible stages as you focus. Only
+fully-completed sessions are logged — Settings has no bearing here, it's always on.
+Your session count and best day (most sessions completed in a single day) are tracked
+under **Progress**.

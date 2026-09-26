@@ -7,11 +7,11 @@
 
      1. APPLICATION STATE
      2. LOCAL STORAGE
-     3. SAMPLE / DEMO DATA
-     4. ASSIGNMENTS (create / read / update / delete / derive)
-     5. DATE AND TIME
-     6. GEMINI API
-     7. GAMIFICATION
+     3. ASSIGNMENTS (create / read / update / delete / derive)
+     4. DATE AND TIME
+     5. GEMINI API
+     6. GAMIFICATION
+     7. STUDY TIMER
      8. UI RENDERING
      9. EVENT HANDLERS
     10. INITIALIZATION
@@ -26,15 +26,17 @@
    ===================================================================== */
 
 const state = {
-  assignments: [],          // array of assignment objects (see ASSIGNMENTS section)
-  settings: null,           // { name, language, theme, gamification, geminiApiKey, onboarded }
-  gamification: null,       // { xp, streak, lastVisitDate }
-  currentView: "dashboard",  // "dashboard" | "detail" | "history"
+  assignments: [],
+  settings: null,           // { name, theme, gamification, geminiApiKey, onboarded, tutorialSeen }
+  gamification: null,       // { xp }
+  customSubjects: [],       // subjects the user added in Settings before using them on any assignment
+  currentView: "dashboard",  // "dashboard" | "detail" | "history" | "timer" | "settings"
   currentAssignmentId: null,
   currentFilter: "all",
   currentSort: "deadline",
+  currentGroupBy: "subject", // "subject" | "domain" | "none"
   searchQuery: "",
-  pendingConfirmAction: null, // function to run when the confirm modal is accepted
+  pendingConfirmAction: null,
 };
 
 
@@ -49,25 +51,23 @@ const STORAGE_KEYS = {
   ASSIGNMENTS: "nexus_assignments",
   SETTINGS: "nexus_settings",
   GAMIFICATION: "nexus_gamification",
+  CUSTOM_SUBJECTS: "nexus_custom_subjects",
+  STUDY_SESSIONS: "nexus_study_sessions",
 };
 
 function defaultSettings() {
   return {
     name: "",
-    language: "en",
     theme: "dark",
     gamification: true,
     geminiApiKey: "",
     onboarded: false,
+    tutorialSeen: false,
   };
 }
 
 function defaultGamification() {
-  return {
-    xp: 0,
-    streak: 0,
-    lastVisitDate: null,
-  };
+  return { xp: 0 };
 }
 
 // Generic "read JSON from localStorage, fall back safely" helper.
@@ -87,151 +87,29 @@ function writeJSON(key, value) {
   try {
     localStorage.setItem(key, JSON.stringify(value));
   } catch (err) {
-    // Most likely a full/blocked storage quota. The app keeps working
-    // in memory; we just let the user know their change may not persist.
     console.error(`Nexus: could not save "${key}" to localStorage.`, err);
     showToast("Could not save to this browser's storage. Your latest change may be lost on reload.", "error");
   }
 }
 
-function loadAssignments() {
-  return readJSON(STORAGE_KEYS.ASSIGNMENTS, []);
-}
-function saveAssignments() {
-  writeJSON(STORAGE_KEYS.ASSIGNMENTS, state.assignments);
-}
+function loadAssignments() { return readJSON(STORAGE_KEYS.ASSIGNMENTS, []); }
+function saveAssignments() { writeJSON(STORAGE_KEYS.ASSIGNMENTS, state.assignments); }
 
-function loadSettings() {
-  return Object.assign(defaultSettings(), readJSON(STORAGE_KEYS.SETTINGS, {}));
-}
-function saveSettings() {
-  writeJSON(STORAGE_KEYS.SETTINGS, state.settings);
-}
+function loadSettings() { return Object.assign(defaultSettings(), readJSON(STORAGE_KEYS.SETTINGS, {})); }
+function saveSettings() { writeJSON(STORAGE_KEYS.SETTINGS, state.settings); }
 
-function loadGamification() {
-  return Object.assign(defaultGamification(), readJSON(STORAGE_KEYS.GAMIFICATION, {}));
-}
-function saveGamification() {
-  writeJSON(STORAGE_KEYS.GAMIFICATION, state.gamification);
-}
+function loadGamification() { return Object.assign(defaultGamification(), readJSON(STORAGE_KEYS.GAMIFICATION, {})); }
+function saveGamification() { writeJSON(STORAGE_KEYS.GAMIFICATION, state.gamification); }
+
+function loadCustomSubjects() { return readJSON(STORAGE_KEYS.CUSTOM_SUBJECTS, []); }
+function saveCustomSubjects() { writeJSON(STORAGE_KEYS.CUSTOM_SUBJECTS, state.customSubjects); }
+
+function loadStudySessions() { return readJSON(STORAGE_KEYS.STUDY_SESSIONS, []); }
+function saveStudySessions(sessions) { writeJSON(STORAGE_KEYS.STUDY_SESSIONS, sessions); }
 
 
 /* =====================================================================
-   3. SAMPLE / DEMO DATA
-   Sample assignments are flagged with isSample:true so they can be
-   clearly badged in the UI and removed independently of real data.
-   ===================================================================== */
-
-function buildSampleAssignments() {
-  const now = Date.now();
-  const hours = (h) => new Date(now + h * 3600 * 1000).toISOString();
-  const daysAgo = (d) => new Date(now - d * 86400 * 1000).toISOString();
-
-  return [
-    {
-      id: generateId(),
-      title: "Market Research Report",
-      description: "Investigate the target market for a new campus food-delivery service and summarize demand, competitors, and pricing.",
-      subject: "Business Studies",
-      postedBy: "Dr. Anita Rao",
-      postedDate: daysAgo(6).slice(0, 10),
-      deadline: hours(31), // due tomorrow-ish
-      estimatedEffort: "4 hours",
-      notes: "Focus on the 18-24 demographic.",
-      status: "not-started",
-      card: "none",
-      review: { feedback: "", reviewedDate: null, analysis: null },
-      aiAnalysis: null,
-      timeline: [{ event: "Assignment created", timestamp: daysAgo(6), detail: "" }],
-      createdAt: daysAgo(6),
-      updatedAt: daysAgo(6),
-      isSample: true,
-    },
-    {
-      id: generateId(),
-      title: "Authentication Presentation",
-      description: "Prepare a 10-minute presentation comparing password, biometric and token-based authentication systems.",
-      subject: "Computer Science",
-      postedBy: "Prof. Kevin Liu",
-      postedDate: daysAgo(10).slice(0, 10),
-      deadline: hours(-6), // overdue
-      estimatedEffort: "3 hours",
-      notes: "",
-      status: "submitted",
-      card: "none",
-      review: { feedback: "", reviewedDate: null, analysis: null },
-      aiAnalysis: null,
-      timeline: [
-        { event: "Assignment created", timestamp: daysAgo(10), detail: "" },
-        { event: "Submitted", timestamp: daysAgo(1), detail: "" },
-      ],
-      createdAt: daysAgo(10),
-      updatedAt: daysAgo(1),
-      isSample: true,
-    },
-    {
-      id: generateId(),
-      title: "Python Assignment: Data Structures",
-      description: "Implement a linked list, stack and queue from scratch in Python and write unit tests for each.",
-      subject: "Computer Science",
-      postedBy: "Prof. Kevin Liu",
-      postedDate: daysAgo(14).slice(0, 10),
-      deadline: daysAgo(-2), // future-ish (2 days ahead) — reuse helper oddly; compute directly below
-      estimatedEffort: "6 hours",
-      notes: "Remember to cover edge cases like an empty list.",
-      status: "submitted",
-      card: "yellow",
-      review: {
-        feedback: "Good structure overall, but your stack implementation doesn't handle underflow, and test coverage for the queue is thin. Add a couple of edge-case tests before resubmitting.",
-        reviewedDate: daysAgo(0.75),
-        analysis: null,
-      },
-      aiAnalysis: null,
-      timeline: [
-        { event: "Assignment created", timestamp: daysAgo(14), detail: "" },
-        { event: "Started", timestamp: daysAgo(9), detail: "" },
-        { event: "Submitted", timestamp: daysAgo(3), detail: "" },
-        { event: "Review received", timestamp: daysAgo(0.75), detail: "Yellow card" },
-      ],
-      createdAt: daysAgo(14),
-      updatedAt: daysAgo(0.75),
-      isSample: true,
-    },
-    {
-      id: generateId(),
-      title: "Business Case Study: Retail Turnaround",
-      description: "Analyze the provided case study and recommend a 12-month turnaround strategy for a struggling retail chain.",
-      subject: "Business Studies",
-      postedBy: "Dr. Anita Rao",
-      postedDate: daysAgo(20).slice(0, 10),
-      deadline: daysAgo(5),
-      estimatedEffort: "5 hours",
-      notes: "",
-      status: "completed",
-      card: "green",
-      review: {
-        feedback: "Excellent, well-structured analysis with strong use of the provided financial data. Clear recommendations. Great work.",
-        reviewedDate: daysAgo(4),
-        analysis: null,
-      },
-      aiAnalysis: null,
-      timeline: [
-        { event: "Assignment created", timestamp: daysAgo(20), detail: "" },
-        { event: "Started", timestamp: daysAgo(15), detail: "" },
-        { event: "Submitted", timestamp: daysAgo(7), detail: "" },
-        { event: "Review received", timestamp: daysAgo(4), detail: "Green card" },
-        { event: "Completed", timestamp: daysAgo(4), detail: "" },
-      ],
-      createdAt: daysAgo(20),
-      updatedAt: daysAgo(4),
-      isSample: true,
-    },
-  ];
-}
-
-
-/* =====================================================================
-   4. ASSIGNMENTS
+   3. ASSIGNMENTS
    CRUD helpers plus the pure functions that derive filters, sorting,
    statistics and the "Your Next Move" recommendation from the data.
    ===================================================================== */
@@ -249,14 +127,14 @@ function createAssignmentFromForm(formValues) {
   const assignment = {
     id: generateId(),
     title: formValues.title.trim(),
-    description: formValues.description.trim(),
+    description: (formValues.description || "").trim(),
     domain: (formValues.domain || "").trim(),
-    subject: formValues.subject.trim(),
-    postedBy: formValues.postedBy.trim(),
+    subject: (formValues.subject || "").trim(),
+    postedBy: (formValues.postedBy || "").trim(),
     postedDate: formValues.postedDate || nowISO.slice(0, 10),
     deadline: formValues.deadline,
-    estimatedEffort: formValues.estimatedEffort.trim(),
-    notes: formValues.notes.trim(),
+    estimatedEffort: (formValues.estimatedEffort || "").trim(),
+    notes: (formValues.notes || "").trim(),
     status: formValues.status || "not-started",
     card: "none",
     review: { feedback: "", reviewedDate: null, analysis: null },
@@ -264,7 +142,6 @@ function createAssignmentFromForm(formValues) {
     timeline: [],
     createdAt: nowISO,
     updatedAt: nowISO,
-    isSample: false,
   };
   addTimelineEvent(assignment, "Assignment created");
   return assignment;
@@ -351,7 +228,7 @@ function sortAssignments(assignments, sortKey) {
 
 // Deterministic "Your Next Move" recommendation. Gemini is only ever
 // used afterwards to *explain* this pick in natural language — never
-// to choose it. See section 6.
+// to choose it. See section 5.
 function pickNextMove(assignments) {
   const candidates = assignments.filter((a) => isActionable(a));
   if (candidates.length === 0) return null;
@@ -369,7 +246,6 @@ function pickNextMove(assignments) {
     if (a.card === "yellow" || a.card === "red") { score += 30; reasons.push("needs-improvement"); }
     if (a.status === "not-started") { score += 10; reasons.push("not-started"); }
 
-    // Nearer deadlines break ties (and matter even with no other signal).
     const hoursLeft = (new Date(a.deadline).getTime() - Date.now()) / 3600000;
     score += Math.max(0, 72 - Math.min(hoursLeft, 72)) * 0.5;
 
@@ -402,13 +278,11 @@ function buildNextMoveExplanation(pick, allAssignments) {
 
 
 /* =====================================================================
-   5. DATE AND TIME
+   4. DATE AND TIME
    All date/time formatting funnels through here. The countdown
    interval only rewrites the small DOM nodes tagged with
-   [data-countdown], never the whole page — see startCountdownLoop().
+   [data-countdown], never the whole page — see startTimeLoops().
    ===================================================================== */
-
-function pad2(n) { return String(n).padStart(2, "0"); }
 
 function formatDeadlineCountdown(deadlineISO, status) {
   if (status === "completed") return "Completed";
@@ -466,8 +340,6 @@ function formatDateShort(iso) {
   return d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
 }
 
-// Targeted per-second update: only touches existing DOM text, never
-// re-renders cards/lists. Keeps the app cheap even with many countdowns.
 function updateCountdowns() {
   document.querySelectorAll("[data-countdown-deadline]").forEach((el) => {
     const deadline = el.getAttribute("data-countdown-deadline");
@@ -477,7 +349,6 @@ function updateCountdowns() {
   });
 }
 
-// Relative timestamps ("5 days ago") don't need per-second precision.
 function updateRelativeTimestamps() {
   document.querySelectorAll("[data-relative-time]").forEach((el) => {
     el.textContent = formatRelativeTime(el.getAttribute("data-relative-time"));
@@ -489,12 +360,13 @@ function startTimeLoops() {
   updateRelativeTimestamps();
   setInterval(updateCountdowns, 1000);
   setInterval(updateRelativeTimestamps, 60000);
+  setInterval(tickStudyTimer, 1000);
 }
 
 
 /* =====================================================================
-   6. GEMINI API
-   A single generic caller plus three task-specific prompt builders.
+   5. GEMINI API
+   A single generic caller plus task-specific prompt builders.
    Responses are requested as JSON and parsed defensively; if parsing
    fails we still show the raw text rather than losing the response.
 
@@ -505,10 +377,6 @@ function startTimeLoops() {
    through a server that holds the key. See README.md.
    ===================================================================== */
 
-// Google retires model names over time (2.5-flash, 2.0-flash and 1.5-flash
-// have all since been fully sunset in favor of 3.6-flash) — kept as a list,
-// with the loop below falling back automatically, so the next retirement
-// only means adding a new entry here rather than rewriting the call logic.
 const GEMINI_MODEL_CANDIDATES = ["gemini-3.6-flash"];
 let workingGeminiModel = null;
 
@@ -516,8 +384,6 @@ function geminiEndpoint(apiKey, model) {
   return `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
 }
 
-// Cheap, dependency-free hash used only to detect "has this assignment's
-// input changed since it was last analyzed?" — not for security.
 function hashString(str) {
   let hash = 5381;
   for (let i = 0; i < str.length; i++) {
@@ -527,8 +393,6 @@ function hashString(str) {
   return String(hash);
 }
 
-// Returns { ok: true, data } or { ok: false, message } — never throws,
-// so a Gemini failure can never take down the rest of the app.
 async function callGeminiJSON(systemInstruction, userPrompt) {
   const apiKey = (state.settings.geminiApiKey || "").trim();
   if (!apiKey) {
@@ -541,10 +405,6 @@ async function callGeminiJSON(systemInstruction, userPrompt) {
     generationConfig: { responseMimeType: "application/json", temperature: 0.4 },
   });
 
-  // Try the model that worked last time first, then fall back through the
-  // rest of the list. A 404 here means "this model isn't available for this
-  // key" — worth trying another model. Any other error stops immediately;
-  // retrying a different model won't fix a bad key or a network outage.
   const modelsToTry = workingGeminiModel
     ? [workingGeminiModel, ...GEMINI_MODEL_CANDIDATES.filter((m) => m !== workingGeminiModel)]
     : GEMINI_MODEL_CANDIDATES;
@@ -553,8 +413,6 @@ async function callGeminiJSON(systemInstruction, userPrompt) {
 
   let response, lastNotFoundMessage = "";
   for (const model of modelsToTry) {
-    // A 503 ("model overloaded") is usually gone within a couple of seconds,
-    // so it's worth one quiet retry before bothering the user with an error.
     for (let attempt = 1; attempt <= 2; attempt++) {
       try {
         response = await fetch(geminiEndpoint(apiKey, model), {
@@ -610,7 +468,6 @@ async function callGeminiJSON(systemInstruction, userPrompt) {
 
   const parsed = parseJSONLoosely(text);
   if (parsed) return { ok: true, data: parsed, raw: text };
-  // Graceful fallback: show the raw text rather than discarding it.
   return { ok: true, data: { summary: text }, raw: text };
 }
 
@@ -721,12 +578,25 @@ In ONE short, encouraging sentence (max 30 words), explain to the student why th
   return { ok: true, explanation: result.data.explanation || result.data.summary || "" };
 }
 
+async function explainProgressWithAI(groupLabel, stats) {
+  const prompt = `Category: ${groupLabel}
+Completed ${stats.completed} of ${stats.total} assignments (${stats.pct}%).
+
+In ONE short, encouraging and motivating sentence (max 22 words) for the student about their progress in this specific category. Respond with ONLY this JSON shape:
+{ "line": "..." }`;
+  const result = await callGeminiJSON(
+    "You are Nexus's academic mentor: warm, brief, and encouraging about a student's progress in one specific subject or category. Never invent numbers beyond what's given.",
+    prompt
+  );
+  if (!result.ok) return result;
+  return { ok: true, line: result.data.line || result.data.summary || "" };
+}
+
 
 /* =====================================================================
-   7. GAMIFICATION
-   Optional and subtle by design. XP/streak are the only values
-   persisted; badges are derived on the fly from current data so there
-   is nothing to keep in sync.
+   6. GAMIFICATION
+   Optional and subtle by design. XP is the only value persisted;
+   badges and levels are derived on the fly from current data.
    ===================================================================== */
 
 const XP_REWARDS = {
@@ -734,6 +604,7 @@ const XP_REWARDS = {
   firstAnalysis: 10,
   saveReview: 15,
   analyzeReview: 10,
+  completeStudySession: 20,
 };
 
 function awardXP(amount) {
@@ -751,20 +622,21 @@ function xpProgressPercent(xp) {
   return Math.round(((xp % 150) / 150) * 100);
 }
 
-function updateStreakOnVisit() {
-  const today = new Date().toISOString().slice(0, 10);
-  const last = state.gamification.lastVisitDate;
-  if (last === today) return;
+const LEVEL_TITLES = [
+  { min: 1, max: 9, title: "Rookie" },
+  { min: 10, max: 19, title: "Apprentice" },
+  { min: 20, max: 29, title: "Scholar" },
+  { min: 30, max: 39, title: "Strategist" },
+  { min: 40, max: 49, title: "Veteran" },
+  { min: 50, max: 59, title: "Specialist" },
+  { min: 60, max: 69, title: "Expert" },
+  { min: 70, max: 79, title: "Virtuoso" },
+  { min: 80, max: 89, title: "Master" },
+  { min: 90, max: Infinity, title: "Legend" },
+];
 
-  if (last) {
-    const dayMs = 86400000;
-    const gap = Math.round((new Date(today) - new Date(last)) / dayMs);
-    state.gamification.streak = gap === 1 ? state.gamification.streak + 1 : 1;
-  } else {
-    state.gamification.streak = 1;
-  }
-  state.gamification.lastVisitDate = today;
-  saveGamification();
+function titleForLevel(level) {
+  return (LEVEL_TITLES.find((t) => level >= t.min && level <= t.max) || LEVEL_TITLES[0]).title;
 }
 
 function computeEarnedBadges() {
@@ -772,14 +644,92 @@ function computeEarnedBadges() {
   const completedCount = state.assignments.filter((a) => a.status === "completed").length;
   const greenCount = state.assignments.filter((a) => a.card === "green").length;
   const analyzedCount = state.assignments.filter((a) => a.aiAnalysis).length;
+  const sessionCount = loadStudySessions().length;
 
-  if (state.assignments.length >= 1) badges.push({ id: "first-steps", label: "🌱 First Steps" });
-  if (completedCount >= 1) badges.push({ id: "finisher", label: "🏁 Finisher" });
-  if (completedCount >= 5) badges.push({ id: "high-achiever", label: "🏆 High Achiever" });
-  if (greenCount >= 3) badges.push({ id: "green-streak", label: "🟢 Green Streak" });
-  if (analyzedCount >= 3) badges.push({ id: "mentors-favorite", label: "✨ Mentor's Favorite" });
-  if (state.gamification.streak >= 3) badges.push({ id: "on-fire", label: "🔥 On Fire" });
+  if (state.assignments.length >= 1) badges.push({ id: "first-steps", label: "First Steps" });
+  if (completedCount >= 1) badges.push({ id: "finisher", label: "Finisher" });
+  if (completedCount >= 5) badges.push({ id: "high-achiever", label: "High Achiever" });
+  if (greenCount >= 3) badges.push({ id: "green-streak", label: "Green Streak" });
+  if (analyzedCount >= 3) badges.push({ id: "mentors-favorite", label: "Mentor's Favorite" });
+  if (sessionCount >= 5) badges.push({ id: "focused", label: "Focused" });
   return badges;
+}
+
+
+/* =====================================================================
+   7. STUDY TIMER
+   A simple preset countdown with a tree that grows through visible
+   stages as the session progresses. Only fully-completed sessions are
+   logged; pausing/stopping early logs nothing.
+   ===================================================================== */
+
+const TIMER_PRESETS = [15, 25, 45, 60];
+
+const timerState = {
+  running: false,
+  durationMinutes: 25,
+  totalSeconds: 25 * 60,
+  remainingSeconds: 25 * 60,
+  intervalId: null,
+};
+
+function timerTreeStage(fractionElapsed) {
+  if (fractionElapsed >= 0.85) return 4;
+  if (fractionElapsed >= 0.6) return 3;
+  if (fractionElapsed >= 0.4) return 2;
+  if (fractionElapsed >= 0.2) return 1;
+  return 0;
+}
+
+function startStudyTimer(minutes) {
+  if (timerState.running) return;
+  if (minutes) {
+    timerState.durationMinutes = minutes;
+    timerState.totalSeconds = minutes * 60;
+    timerState.remainingSeconds = minutes * 60;
+  }
+  timerState.running = true;
+  renderTimerView();
+}
+
+function pauseStudyTimer() {
+  timerState.running = false;
+  renderTimerView();
+}
+
+function stopStudyTimer() {
+  timerState.running = false;
+  timerState.remainingSeconds = timerState.totalSeconds;
+  renderTimerView();
+}
+
+function tickStudyTimer() {
+  if (!timerState.running) return;
+  timerState.remainingSeconds -= 1;
+  if (timerState.remainingSeconds <= 0) {
+    completeStudySession();
+    return;
+  }
+  updateTimerDisplay();
+}
+
+function completeStudySession() {
+  timerState.running = false;
+  const sessions = loadStudySessions();
+  sessions.push({ date: new Date().toISOString().slice(0, 10), durationMinutes: timerState.durationMinutes });
+  saveStudySessions(sessions);
+  timerState.remainingSeconds = timerState.totalSeconds;
+  awardXP(XP_REWARDS.completeStudySession);
+  showToast("Session complete — your tree is fully grown 🌳", "success");
+  renderTimerView();
+}
+
+function computeStudyStats() {
+  const sessions = loadStudySessions();
+  const perDay = {};
+  sessions.forEach((s) => { perDay[s.date] = (perDay[s.date] || 0) + 1; });
+  const bestDay = Object.values(perDay).reduce((max, n) => Math.max(max, n), 0);
+  return { totalSessions: sessions.length, bestDay, sessions };
 }
 
 
@@ -798,12 +748,19 @@ function escapeHTML(str) {
   return div.innerHTML;
 }
 
-// ---- Theme -----------------------------------------------------------
+function iconTag(name, size = 14) {
+  return `<svg class="icon" width="${size}" height="${size}"><use href="#icon-${name}"></use></svg>`;
+}
 
+function dotTag(card) {
+  return `<span class="status-dot dot-${card}"></span>`;
+}
+
+// ---- Theme -----------------------------------------------------------
+// Moon/sun swap is pure CSS (see html[data-theme] rules); this just
+// flips the attribute that everything else keys off of.
 function applyTheme(theme) {
   document.documentElement.setAttribute("data-theme", theme === "light" ? "light" : "dark");
-  const btn = $("#theme-toggle-btn");
-  if (btn) btn.querySelector("span").textContent = theme === "light" ? "☀️" : "🌙";
 }
 
 // ---- Toasts ------------------------------------------------------------
@@ -847,40 +804,35 @@ function showView(viewName) {
   state.currentView = viewName;
   $all(".view").forEach((v) => v.classList.add("hidden"));
   $(`#view-${viewName}`).classList.remove("hidden");
+  $all(".sidebar-nav-btn").forEach((b) => b.classList.toggle("active", b.dataset.view === viewName));
   window.scrollTo({ top: 0, behavior: "instant" in window.scrollTo ? "instant" : "auto" });
 }
 
 // ---- Greeting ----------------------------------------------------------
 
-const TRANSLATIONS = {
-  en: {
-    morning: "Good morning", afternoon: "Good afternoon", evening: "Good evening",
-    subGreeting: "Here's what needs your attention.",
-    addAssignment: "+ Add Assignment",
-    addFirstAssignment: "+ Add Your First Assignment",
-  },
-  ta: {
-    morning: "காலை வணக்கம்", afternoon: "மதிய வணக்கம்", evening: "மாலை வணக்கம்",
-    subGreeting: "உங்கள் கவனம் தேவைப்படுவது இதோ.",
-    addAssignment: "+ பணி சேர்க்க",
-    addFirstAssignment: "+ முதல் பணியைச் சேர்க்க",
-  },
-  hi: {
-    morning: "सुप्रभात", afternoon: "नमस्कार", evening: "शुभ संध्या",
-    subGreeting: "यहाँ है जिस पर आपको ध्यान देना है।",
-    addAssignment: "+ असाइनमेंट जोड़ें",
-    addFirstAssignment: "+ अपना पहला असाइनमेंट जोड़ें",
-  },
-};
-
 function renderGreeting() {
-  const t = TRANSLATIONS[state.settings.language] || TRANSLATIONS.en;
   const hour = new Date().getHours();
-  const timeGreeting = hour < 12 ? t.morning : hour < 18 ? t.afternoon : t.evening;
+  const timeGreeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
   $("#greeting-text").textContent = `${timeGreeting}${state.settings.name ? ", " + state.settings.name : ""}.`;
-  $("#greeting-sub").textContent = t.subGreeting;
-  $("#add-assignment-btn").textContent = t.addAssignment;
-  $("#empty-add-btn").textContent = t.addFirstAssignment;
+  $("#greeting-sub").textContent = "Here's what needs your attention.";
+}
+
+// ---- Level widget (main dashboard) --------------------------------------
+
+function renderLevelWidget() {
+  const el = $("#level-widget");
+  if (!state.settings.gamification) { el.classList.add("hidden"); return; }
+  el.classList.remove("hidden");
+  const xp = state.gamification.xp;
+  const level = levelFromXP(xp);
+  el.innerHTML = `
+    <div class="level-widget-badge">${level}</div>
+    <div class="level-widget-info">
+      <div class="level-widget-title">Level ${level} · ${titleForLevel(level)}</div>
+      <div class="level-widget-sub">${xp} XP total</div>
+      <div class="level-widget-bar-track"><div class="level-widget-bar-fill" style="width:${xpProgressPercent(xp)}%"></div></div>
+    </div>
+  `;
 }
 
 // ---- Summary cards -----------------------------------------------------
@@ -910,7 +862,7 @@ function renderNextMove() {
   if (!pick) {
     container.innerHTML = `
       <div class="next-move-eyebrow">Your next move</div>
-      <p class="next-move-empty">You're all caught up! Add a new assignment or enjoy the moment. 🎉</p>
+      <p class="next-move-empty">You're all caught up! Add a new assignment or enjoy the moment.</p>
     `;
     return;
   }
@@ -929,7 +881,7 @@ function renderNextMove() {
     <div class="next-move-quote" id="next-move-explanation">"${escapeHTML(explanation)}"</div>
     <div class="next-move-actions">
       <button class="btn btn-primary" data-action="open-assignment" data-id="${assignment.id}">Open assignment</button>
-      <button class="btn btn-ghost" id="next-move-ai-btn" data-action="explain-next-move" data-id="${assignment.id}">✨ Ask Mentor to explain</button>
+      <button class="btn btn-ghost" id="next-move-ai-btn" data-action="explain-next-move" data-id="${assignment.id}">${iconTag("sparkle", 13)} Ask Mentor to explain</button>
     </div>
   `;
 }
@@ -937,10 +889,7 @@ function renderNextMove() {
 // ---- Status / card labels -------------------------------------------
 
 function statusLabel(status) {
-  return { "not-started": "Not started", "in-progress": "In progress", "submitted": "Submitted", "completed": "Completed", "locked": "🔒 Locked" }[status] || status;
-}
-function cardEmoji(card) {
-  return { green: "🟢", yellow: "🟡", red: "🔴", none: "⚪" }[card] || "⚪";
+  return { "not-started": "Not started", "in-progress": "In progress", "submitted": "Submitted", "completed": "Completed", "locked": "Locked" }[status] || status;
 }
 function cardLabel(card) {
   return { green: "Green card", yellow: "Yellow card", red: "Red card", none: "No review yet" }[card] || "No review yet";
@@ -970,40 +919,36 @@ function renderAssignmentList() {
     return;
   }
 
-  container.innerHTML = groupByDomainHTML(list);
+  container.innerHTML = groupAssignmentsHTML(list, state.currentGroupBy);
 }
 
-// Domain-wise organization: a fixed priority order for the domains the
-// student actually uses, then any others alphabetically, then a catch-all
-// for assignments with no domain set.
-const DOMAIN_PRIORITY = ["Business", "Design", "Tech"];
+// User-defined categories: group by whichever field the student
+// actually uses (subject/course, or a broader domain), or not at all.
+function groupAssignmentsHTML(list, groupField) {
+  if (groupField === "none") {
+    return `<div class="assignment-group-grid">${list.map(renderAssignmentCardHTML).join("")}</div>`;
+  }
 
-function groupByDomainHTML(list) {
   const groups = new Map();
   for (const a of list) {
-    const key = (a.domain || "").trim() || "General";
+    const key = (a[groupField] || "").trim() || "General";
     if (!groups.has(key)) groups.set(key, []);
     groups.get(key).push(a);
   }
 
   const orderedKeys = Array.from(groups.keys()).sort((a, b) => {
-    const ai = DOMAIN_PRIORITY.indexOf(a);
-    const bi = DOMAIN_PRIORITY.indexOf(b);
     if (a === "General") return 1;
     if (b === "General") return -1;
-    if (ai !== -1 && bi !== -1) return ai - bi;
-    if (ai !== -1) return -1;
-    if (bi !== -1) return 1;
     return a.localeCompare(b);
   });
 
   return orderedKeys.map((key) => `
-    <section class="domain-group">
-      <div class="domain-group-header">
-        <span class="domain-group-title">${escapeHTML(key)}</span>
-        <span class="domain-group-count">${groups.get(key).length}</span>
+    <section class="assignment-group">
+      <div class="assignment-group-header">
+        <span class="assignment-group-title">${escapeHTML(key)}</span>
+        <span class="assignment-group-count">${groups.get(key).length}</span>
       </div>
-      <div class="domain-group-grid">${groups.get(key).map(renderAssignmentCardHTML).join("")}</div>
+      <div class="assignment-group-grid">${groups.get(key).map(renderAssignmentCardHTML).join("")}</div>
     </section>
   `).join("");
 }
@@ -1018,15 +963,14 @@ function renderAssignmentCardHTML(a) {
           <div class="assignment-card-subject">${escapeHTML(a.subject || "General")}</div>
           <div class="assignment-card-title">${escapeHTML(a.title)}</div>
         </div>
-        ${a.isSample ? `<span class="badge badge-sample">Sample</span>` : ""}
       </div>
       <div class="assignment-card-meta">
         <span data-countdown-deadline="${a.deadline}" data-countdown-status="${a.status}" class="countdown"></span>
         <span>Deadline: ${formatDateShort(a.deadline)}</span>
       </div>
       <div class="assignment-card-footer">
-        <span class="badge badge-status-${a.status}">${statusLabel(a.status)}</span>
-        <span class="badge badge-card-${a.card}">${cardEmoji(a.card)} ${cardLabel(a.card)}</span>
+        <span class="badge badge-status-${a.status}">${a.status === "locked" ? iconTag("lock", 11) + " " : ""}${statusLabel(a.status)}</span>
+        <span class="badge badge-card-${a.card}">${dotTag(a.card)} ${cardLabel(a.card)}</span>
         ${overdue ? `<span class="badge badge-overdue">Overdue</span>` : ""}
       </div>
     </div>
@@ -1049,7 +993,7 @@ function renderDetailView(assignment) {
       ${assignment.description ? `<p>${escapeHTML(assignment.description)}</p>` : ""}
       <div class="detail-meta-grid">
         <div class="detail-meta-item">
-          <div class="meta-label">Domain</div>
+          <div class="meta-label">Category</div>
           <div class="meta-value">${escapeHTML(assignment.domain || "—")}</div>
         </div>
         <div class="detail-meta-item">
@@ -1076,13 +1020,13 @@ function renderDetailView(assignment) {
               <option value="in-progress" ${assignment.status === "in-progress" ? "selected" : ""}>In progress</option>
               <option value="submitted" ${assignment.status === "submitted" ? "selected" : ""}>Submitted</option>
               <option value="completed" ${assignment.status === "completed" ? "selected" : ""}>Completed</option>
-              <option value="locked" ${assignment.status === "locked" ? "selected" : ""}>🔒 Locked</option>
+              <option value="locked" ${assignment.status === "locked" ? "selected" : ""}>Locked</option>
             </select>
           </div>
         </div>
         <div class="detail-meta-item">
           <div class="meta-label">Card</div>
-          <div class="meta-value">${cardEmoji(assignment.card)} ${cardLabel(assignment.card)}</div>
+          <div class="meta-value">${dotTag(assignment.card)} ${cardLabel(assignment.card)}</div>
         </div>
       </div>
       <div class="detail-actions">
@@ -1104,7 +1048,7 @@ function renderAIBreakdownSectionHTML(assignment) {
   if (!a) {
     return `
       <section class="detail-section">
-        <h2>🧭 AI Breakdown</h2>
+        <h2>${iconTag("sparkle", 16)} AI Breakdown</h2>
         <p class="detail-section-sub">Ask the mentor to explain what this assignment actually requires.</p>
         ${analyzeBtn}
         <div id="assignment-analysis-status"></div>
@@ -1114,7 +1058,7 @@ function renderAIBreakdownSectionHTML(assignment) {
 
   return `
     <section class="detail-section">
-      <h2>🧭 AI Breakdown</h2>
+      <h2>${iconTag("sparkle", 16)} AI Breakdown</h2>
       <p class="detail-section-sub">Generated ${formatRelativeTime(a.generatedDate)}</p>
       <div class="ai-block">
         <h3>Summary</h3>
@@ -1125,7 +1069,7 @@ function renderAIBreakdownSectionHTML(assignment) {
       ${a.suggestedApproach.length ? `<div class="ai-block"><h3>Suggested approach</h3><ul>${a.suggestedApproach.map((r) => `<li>${escapeHTML(r)}</li>`).join("")}</ul></div>` : ""}
       ${a.extraMileIdeas.length ? `
         <div class="ai-block">
-          <h3>🚀 Go the extra mile <span class="required-badge-inline">(optional — not required)</span></h3>
+          <h3>Go the extra mile <span class="required-badge-inline">(optional — not required)</span></h3>
           <div class="extra-mile-block"><ul>${a.extraMileIdeas.map((r) => `<li>${escapeHTML(r)}</li>`).join("")}</ul></div>
         </div>` : ""}
       ${analyzeBtn}
@@ -1140,9 +1084,9 @@ function renderReviewSectionHTML(assignment) {
 
   return `
     <section class="detail-section">
-      <h2>📋 Review</h2>
+      <h2>${iconTag("tag", 16)} Review</h2>
       <div class="review-summary">
-        <span class="badge badge-card-${assignment.card}">${cardEmoji(assignment.card)} ${cardLabel(assignment.card)}</span>
+        <span class="badge badge-card-${assignment.card}">${dotTag(assignment.card)} ${cardLabel(assignment.card)}</span>
         ${r.reviewedDate ? `<span data-relative-time="${r.reviewedDate}" style="color:var(--text-muted); font-size:0.85rem;"></span>` : ""}
         <button class="btn btn-secondary btn-small" data-action="open-review-modal" data-id="${assignment.id}">${hasFeedback ? "Edit review" : "Record review"}</button>
       </div>
@@ -1177,7 +1121,7 @@ function renderTimelineSectionHTML(assignment) {
   const events = assignment.timeline.slice().sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
   return `
     <section class="detail-section">
-      <h2>🕓 Timeline</h2>
+      <h2>Timeline</h2>
       <ul class="timeline">
         ${events.map((e) => `
           <li>
@@ -1192,6 +1136,28 @@ function renderTimelineSectionHTML(assignment) {
 
 // ---- History / progress view -------------------------------------------
 
+const REPORT_CARD_META = {
+  green: { label: "Green", note: "Consistently on target" },
+  yellow: { label: "Yellow", note: "Getting there — refine and resubmit" },
+  red: { label: "Red", note: "Needs focused attention" },
+};
+
+function computeGroupStats(assignments, groupField) {
+  const groups = new Map();
+  for (const a of assignments) {
+    const key = (a[groupField] || "").trim() || "General";
+    if (!groups.has(key)) groups.set(key, { total: 0, completed: 0 });
+    const g = groups.get(key);
+    g.total++;
+    if (a.status === "completed") g.completed++;
+  }
+  return Array.from(groups.entries())
+    .map(([name, g]) => ({ name, total: g.total, completed: g.completed, pct: g.total ? Math.round((g.completed / g.total) * 100) : 0 }))
+    .sort((a, b) => b.total - a.total);
+}
+
+const categoryAICache = {};
+
 function renderHistoryView() {
   const container = $("#history-content");
   const all = state.assignments;
@@ -1202,9 +1168,26 @@ function renderHistoryView() {
     yellow: all.filter((a) => a.card === "yellow").length,
     red: all.filter((a) => a.card === "red").length,
   };
-  const maxCount = Math.max(1, distribution.green, distribution.yellow, distribution.red);
 
   const themes = extractFeedbackThemes(all);
+  const subjectStats = computeGroupStats(all, "subject");
+  const domainStats = computeGroupStats(all, "domain");
+
+  const renderCategoryBlock = (fieldKey, stats) => stats.map((s) => {
+    const cacheKey = `${fieldKey}:${s.name}:${s.completed}:${s.total}`;
+    const cached = categoryAICache[cacheKey];
+    const fallback = `Keep going in ${s.name} — ${s.pct}% complete.`;
+    return `
+      <div class="category-progress-block">
+        <div class="category-progress-head">
+          <span class="category-progress-name">${escapeHTML(s.name)}</span>
+          <span class="category-progress-pct">${s.pct}%</span>
+        </div>
+        <div class="category-progress-track"><div class="category-progress-fill" style="width:${s.pct}%"></div></div>
+        <p class="category-progress-ai" data-category-ai="${cacheKey}">${escapeHTML(cached || fallback)}</p>
+      </div>
+    `;
+  }).join("");
 
   container.innerHTML = `
     <div class="history-grid">
@@ -1223,19 +1206,22 @@ function renderHistoryView() {
     </div>
 
     <section class="detail-section">
-      <h2>Review distribution</h2>
+      <h2>Your report card</h2>
       ${reviewed.length === 0 ? `<p>No reviews recorded yet — this will fill in as assignments are reviewed.</p>` : `
-        <div class="review-distribution">
+        <div class="report-card-row">
           ${["green", "yellow", "red"].map((c) => `
-            <div class="review-bar-row">
-              <span style="width:70px;">${cardEmoji(c)} ${c}</span>
-              <div class="review-bar-track"><div class="review-bar-fill ${c}" style="width:${(distribution[c] / maxCount) * 100}%"></div></div>
-              <span>${distribution[c]}</span>
+            <div class="report-card rc-${c}">
+              <div class="report-card-count">${distribution[c]}</div>
+              <div class="report-card-label">${REPORT_CARD_META[c].label}</div>
+              <div class="report-card-note">${REPORT_CARD_META[c].note}</div>
             </div>
           `).join("")}
         </div>
       `}
     </section>
+
+    ${subjectStats.length ? `<section class="detail-section"><h2>Progress by subject</h2>${renderCategoryBlock("subject", subjectStats)}</section>` : ""}
+    ${domainStats.length ? `<section class="detail-section"><h2>Progress by category</h2>${renderCategoryBlock("domain", domainStats)}</section>` : ""}
 
     <section class="detail-section">
       <h2>Common feedback themes</h2>
@@ -1245,10 +1231,28 @@ function renderHistoryView() {
 
     ${state.settings.gamification ? renderGamificationSectionHTML() : ""}
   `;
+
+  fetchMissingCategoryBlurbs("subject", subjectStats);
+  fetchMissingCategoryBlurbs("domain", domainStats);
 }
 
-// Lightweight keyword-based theme detection — no invented statistics;
-// a theme is only shown if it actually appears in stored feedback text.
+// Fire-and-forget AI encouragement per category — never blocks the
+// initial render, and silently keeps the static fallback line if no
+// key is set or the request fails.
+async function fetchMissingCategoryBlurbs(fieldKey, statsList) {
+  if (!(state.settings.geminiApiKey || "").trim()) return;
+  for (const s of statsList) {
+    const cacheKey = `${fieldKey}:${s.name}:${s.completed}:${s.total}`;
+    if (categoryAICache[cacheKey]) continue;
+    const result = await explainProgressWithAI(s.name, s);
+    if (result.ok && result.line) {
+      categoryAICache[cacheKey] = result.line;
+      const el = $(`[data-category-ai="${cacheKey}"]`);
+      if (el) el.textContent = result.line;
+    }
+  }
+}
+
 const FEEDBACK_THEME_KEYWORDS = {
   "Research depth": ["research", "depth", "evidence", "sources"],
   "Presentation": ["presentation", "formatting", "layout", "slides", "design"],
@@ -1276,36 +1280,360 @@ function renderGamificationSectionHTML() {
   const badges = computeEarnedBadges();
   return `
     <section class="detail-section">
-      <h2>🎮 Progress level</h2>
-      <p>Level ${level} · ${xp} XP · 🔥 ${state.gamification.streak}-day streak</p>
-      <div class="xp-bar-track"><div class="xp-bar-fill" style="width:${xpProgressPercent(xp)}%"></div></div>
+      <h2>Badges</h2>
+      <p>Level ${level} · ${titleForLevel(level)} · ${xp} XP</p>
       <div class="badge-row">${badges.map((b) => `<span class="achievement-badge">${b.label}</span>`).join("") || "<span style='color:var(--text-muted)'>No badges yet — keep going!</span>"}</div>
     </section>
   `;
 }
 
-// ---- Settings modal ------------------------------------------------------
+// ---- Study Timer view -----------------------------------------------------
 
-function populateSettingsModal() {
-  $("#settings-name").value = state.settings.name;
-  $("#settings-language").value = state.settings.language;
-  $("#settings-theme-toggle").checked = state.settings.theme === "dark";
-  $("#settings-gamification-toggle").checked = state.settings.gamification;
-  $("#settings-api-key").value = state.settings.geminiApiKey;
-  renderSettingsGamificationSummary();
+function renderTimerView() {
+  const container = $("#timer-content");
+  const stats = computeStudyStats();
+  const fraction = 1 - timerState.remainingSeconds / timerState.totalSeconds;
+  const stage = timerTreeStage(fraction);
+  const trunkHeight = 14 + stage * 10;
+  const leafSize = 30 + stage * 22;
+
+  container.innerHTML = `
+    <div class="timer-layout">
+      <div class="timer-stage">
+        <div class="timer-tree-scene">
+          <div class="timer-tree-ground"></div>
+          ${stage > 0 ? `<div class="timer-tree-trunk" style="height:${trunkHeight}px;"></div>` : ""}
+          ${stage > 0 ? `<div class="timer-tree-leaves" style="width:${leafSize}px; height:${leafSize}px; bottom:${trunkHeight + 6}px;"></div>` : ""}
+        </div>
+        <div class="timer-stage-label" id="timer-stage-label"></div>
+        <div class="timer-clock" id="timer-clock"></div>
+        <div class="timer-presets">
+          ${TIMER_PRESETS.map((m) => `<button type="button" class="timer-preset-btn ${m === timerState.durationMinutes ? "active" : ""}" data-preset="${m}" ${timerState.running ? "disabled" : ""}>${m} min</button>`).join("")}
+        </div>
+        <div class="timer-controls">
+          ${timerState.running
+            ? `<button type="button" class="btn btn-secondary" id="timer-pause-btn">${iconTag("pause", 16)} Pause</button>`
+            : `<button type="button" class="btn btn-primary" id="timer-start-btn">${iconTag("play", 16)} Start</button>`}
+          <button type="button" class="btn btn-ghost" id="timer-stop-btn">${iconTag("stop", 16)} Reset</button>
+        </div>
+      </div>
+      <div class="timer-stats">
+        <div class="timer-stat-row"><span class="timer-stat-value">${stats.totalSessions}</span><span class="timer-stat-label">Sessions completed</span></div>
+        <div class="timer-stat-row"><span class="timer-stat-value">${stats.bestDay}</span><span class="timer-stat-label">Best day (sessions)</span></div>
+        <h3 style="margin-top:6px;">Recent sessions</h3>
+        <ul class="timer-log-list">
+          ${stats.sessions.slice(-8).reverse().map((s) => `<li><span>${formatDateShort(s.date)}</span><span>${s.durationMinutes} min</span></li>`).join("") || "<li style='color:var(--text-muted)'>No sessions yet — start one!</li>"}
+        </ul>
+      </div>
+    </div>
+  `;
+  updateTimerDisplay();
 }
 
-function renderSettingsGamificationSummary() {
-  const el = $("#settings-gamification-summary");
-  if (!state.settings.gamification) { el.textContent = ""; return; }
+function updateTimerDisplay() {
+  const clockEl = $("#timer-clock");
+  const labelEl = $("#timer-stage-label");
+  if (!clockEl) return; // timer view not currently built (safe no-op)
+  const m = Math.floor(timerState.remainingSeconds / 60);
+  const s = timerState.remainingSeconds % 60;
+  clockEl.textContent = `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+  const fraction = 1 - timerState.remainingSeconds / timerState.totalSeconds;
+  const stageNames = ["Planting a seed", "Sprouting", "Growing steadily", "Almost there", "Fully grown"];
+  if (labelEl) labelEl.textContent = stageNames[timerTreeStage(fraction)];
+
+  // Update the tree visual live without a full re-render.
+  const stage = timerTreeStage(fraction);
+  const trunk = $(".timer-tree-trunk");
+  const leaves = $(".timer-tree-leaves");
+  if (trunk) trunk.style.height = `${14 + stage * 10}px`;
+  if (leaves) {
+    const size = 30 + stage * 22;
+    leaves.style.width = `${size}px`;
+    leaves.style.height = `${size}px`;
+    leaves.style.bottom = `${14 + stage * 10 + 6}px`;
+  }
+}
+
+// ---- Settings view ---------------------------------------------------------
+
+function getAllUsedSubjects() {
+  return Array.from(new Set(state.assignments.map((a) => a.subject).filter(Boolean)));
+}
+function getAllUsedDomains() {
+  return Array.from(new Set(state.assignments.map((a) => a.domain).filter(Boolean)));
+}
+
+function populateDomainSuggestions() {
+  const domains = Array.from(new Set([...getAllUsedDomains(), ...state.customSubjects])).sort();
+  $("#domain-suggestions").innerHTML = domains.map((d) => `<option value="${escapeHTML(d)}">`).join("");
+}
+function populateSubjectSuggestions() {
+  const subjects = Array.from(new Set([...getAllUsedSubjects(), ...state.customSubjects])).sort();
+  $("#subject-suggestions").innerHTML = subjects.map((s) => `<option value="${escapeHTML(s)}">`).join("");
+}
+
+function renderSettingsView() {
+  const container = $("#settings-content");
   const xp = state.gamification.xp;
-  el.textContent = `Level ${levelFromXP(xp)} · ${xp} XP · 🔥 ${state.gamification.streak}-day streak`;
+  const level = levelFromXP(xp);
+  const allSubjects = Array.from(new Set([...getAllUsedSubjects(), ...state.customSubjects])).sort();
+
+  container.innerHTML = `
+    <div class="settings-group">
+      <h3>Profile</h3>
+      <div class="form-field">
+        <label for="settings-name">Your name</label>
+        <input type="text" id="settings-name" maxlength="60" value="${escapeHTML(state.settings.name)}">
+      </div>
+    </div>
+
+    <div class="settings-group">
+      <h3>Gamification</h3>
+      <div class="form-field form-field-inline">
+        <label for="settings-gamification-toggle">Enable XP, levels and badges</label>
+        <input type="checkbox" id="settings-gamification-toggle" ${state.settings.gamification ? "checked" : ""}>
+      </div>
+      ${state.settings.gamification ? `<p class="settings-hint">Level ${level} · ${titleForLevel(level)} · ${xp} XP</p>` : ""}
+    </div>
+
+    <div class="settings-group">
+      <h3>Subjects &amp; courses</h3>
+      <p class="settings-hint">Add subjects or courses ahead of time so they're ready to pick when you add an assignment.</p>
+      <div class="category-manage-list" id="category-manage-list">
+        ${allSubjects.map((s) => `
+          <span class="category-manage-chip">${escapeHTML(s)}
+            <button type="button" data-remove-subject="${escapeHTML(s)}" aria-label="Remove ${escapeHTML(s)}">${iconTag("close", 11)}</button>
+          </span>
+        `).join("") || "<span style='color:var(--text-muted); font-size:0.85rem;'>No subjects yet.</span>"}
+      </div>
+      <div class="category-add-row">
+        <input type="text" id="settings-new-subject" placeholder="Add a subject or course" maxlength="60">
+        <button type="button" class="btn btn-secondary" id="settings-add-subject-btn">${iconTag("plus", 14)} Add</button>
+      </div>
+    </div>
+
+    <div class="settings-group">
+      <h3>Mentor AI (Google Gemini)</h3>
+      <p class="settings-hint">
+        Your key is stored only in this browser's local storage so the mentor can call Gemini directly from your device.
+        <strong>Never paste a production or billing-enabled key into any client-side app</strong> — for a real deployment this call
+        must go through a server-side proxy that keeps the key secret. See <code>README.md</code> for details.
+      </p>
+      <a class="btn btn-secondary" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">${iconTag("sparkle", 14)} Get a free Gemini API key</a>
+      <div class="form-field" style="margin-top:12px;">
+        <label for="settings-api-key">Gemini API key</label>
+        <input type="password" id="settings-api-key" autocomplete="off" placeholder="Paste your Gemini API key" value="${escapeHTML(state.settings.geminiApiKey)}">
+      </div>
+      <button type="button" id="settings-clear-key-btn" class="btn btn-ghost btn-small">Remove saved key</button>
+    </div>
+
+    <div class="settings-group">
+      <h3>Data</h3>
+      <div class="settings-data-actions">
+        <button type="button" id="settings-export-btn" class="btn btn-secondary">Export My Data</button>
+        <button type="button" id="settings-clear-btn" class="btn btn-danger">Clear All Data</button>
+      </div>
+    </div>
+
+    <div class="settings-group">
+      <h3>Tutorial</h3>
+      <button type="button" id="settings-replay-tutorial-btn" class="btn btn-secondary">Replay the quick tour</button>
+    </div>
+  `;
+
+  $("#settings-name").addEventListener("change", (e) => { state.settings.name = e.target.value.trim(); saveSettings(); render(); });
+  $("#settings-gamification-toggle").addEventListener("change", (e) => {
+    state.settings.gamification = e.target.checked;
+    saveSettings();
+    renderSettingsView();
+  });
+  $("#settings-api-key").addEventListener("change", (e) => {
+    state.settings.geminiApiKey = e.target.value.trim();
+    saveSettings();
+    showToast("Gemini API key saved to this browser.", "success");
+  });
+  $("#settings-clear-key-btn").addEventListener("click", () => {
+    state.settings.geminiApiKey = "";
+    saveSettings();
+    renderSettingsView();
+    showToast("API key removed.", "info");
+  });
+  $("#settings-add-subject-btn").addEventListener("click", () => {
+    const input = $("#settings-new-subject");
+    const value = input.value.trim();
+    if (!value) return;
+    if (!state.customSubjects.includes(value)) {
+      state.customSubjects.push(value);
+      saveCustomSubjects();
+    }
+    input.value = "";
+    renderSettingsView();
+  });
+  $all("[data-remove-subject]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const name = btn.dataset.removeSubject;
+      if (state.customSubjects.includes(name)) {
+        state.customSubjects = state.customSubjects.filter((s) => s !== name);
+        saveCustomSubjects();
+        renderSettingsView();
+      } else {
+        showToast(`"${name}" is used by existing assignments — edit those to change it.`, "info");
+      }
+    });
+  });
+  $("#settings-export-btn").addEventListener("click", exportAssignments);
+  $("#settings-clear-btn").addEventListener("click", () => {
+    showConfirm(
+      "Clear all data?",
+      "This permanently deletes all your assignments and gamification progress from this browser. Your name and theme preference are kept. This cannot be undone.",
+      () => {
+        state.assignments = [];
+        state.gamification = defaultGamification();
+        saveAssignments();
+        saveGamification();
+        showToast("All assignment data cleared.", "info");
+        showView("dashboard");
+        render();
+      },
+      "Clear everything"
+    );
+  });
+  $("#settings-replay-tutorial-btn").addEventListener("click", () => {
+    showView("dashboard");
+    render();
+    setTimeout(startTutorial, 60);
+  });
+}
+
+function exportAssignments() {
+  const blob = new Blob([JSON.stringify(state.assignments, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "nexus-assignments-export.json";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+// ---- Custom dropdowns (sort / group by) ---------------------------------
+
+function initCustomSelect(dropdownId, onChange) {
+  const dropdown = $(`#${dropdownId}`);
+  const trigger = $(`#${dropdownId} .dropdown-trigger`);
+  const list = $(`#${dropdownId} .dropdown-list`);
+
+  function close() { dropdown.classList.remove("open"); list.classList.add("hidden"); trigger.setAttribute("aria-expanded", "false"); }
+  function open() { dropdown.classList.add("open"); list.classList.remove("hidden"); trigger.setAttribute("aria-expanded", "true"); }
+
+  trigger.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const isOpen = !list.classList.contains("hidden");
+    $all(".dropdown-list").forEach((l) => l.classList.add("hidden"));
+    $all(".dropdown").forEach((d) => d.classList.remove("open"));
+    if (!isOpen) open(); else close();
+  });
+
+  $all("li", list).forEach((li) => {
+    li.addEventListener("click", () => {
+      $all("li", list).forEach((o) => o.setAttribute("aria-selected", "false"));
+      li.setAttribute("aria-selected", "true");
+      trigger.querySelector("span").textContent = li.textContent;
+      close();
+      onChange(li.dataset.value);
+    });
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!dropdown.contains(e.target)) close();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") close();
+  });
+}
+
+// ---- Onboarding wizard ---------------------------------------------------
+
+function goToWizardStep(stepNumber) {
+  $all(".welcome-step").forEach((s) => s.classList.add("hidden"));
+  $(`.welcome-step[data-step="${stepNumber}"]`).classList.remove("hidden");
+  $all(".welcome-dot").forEach((d, i) => d.classList.toggle("active", i === stepNumber - 1));
+}
+
+function finishOnboarding() {
+  state.settings.name = $("#welcome-name").value.trim();
+  state.settings.theme = $('input[name="theme"]:checked').value;
+  state.settings.gamification = $("#welcome-gamification").checked;
+  const apiKey = $("#welcome-api-key").value.trim();
+  if (apiKey) state.settings.geminiApiKey = apiKey;
+  state.settings.onboarded = true;
+  saveSettings();
+  applyTheme(state.settings.theme);
+  completeOnboardingUI();
+}
+
+function completeOnboardingUI() {
+  $("#welcome-screen").classList.add("hidden");
+  $("#app").classList.remove("hidden");
+  render();
+  if (!state.settings.tutorialSeen) setTimeout(startTutorial, 300);
+}
+
+// ---- Tutorial overlay (coach marks) --------------------------------------
+
+const TUTORIAL_STEPS = [
+  { selector: "#search-input", title: "Search everything", text: "Find any assignment by title, subject, or reviewer feedback." },
+  { selector: "#groupby-dropdown", title: "Organize your way", text: "Group your dashboard by subject, category, or turn grouping off entirely." },
+  { selector: "#next-move-card", title: "Your next move", text: "Nexus figures out what to work on next using deadlines and review status." },
+  { selector: "#nav-progress-btn", title: "Track your progress", text: "See completion rates and progress broken down by subject or category." },
+  { selector: "#nav-timer-btn", title: "Study Timer", text: "Start a focus session and watch a tree grow as you study." },
+  { selector: "#nav-settings-btn", title: "Settings", text: "Manage your API key, subjects, and data anytime from here." },
+];
+let tutorialIndex = 0;
+
+function startTutorial() {
+  tutorialIndex = 0;
+  $("#tutorial-overlay").classList.remove("hidden");
+  showTutorialStep();
+}
+
+function endTutorial() {
+  $("#tutorial-overlay").classList.add("hidden");
+  state.settings.tutorialSeen = true;
+  saveSettings();
+}
+
+function showTutorialStep() {
+  const step = TUTORIAL_STEPS[tutorialIndex];
+  const target = $(step.selector);
+  if (!target) { tutorialIndex++; if (tutorialIndex < TUTORIAL_STEPS.length) showTutorialStep(); else endTutorial(); return; }
+
+  const rect = target.getBoundingClientRect();
+  const spotlight = $("#tutorial-spotlight");
+  spotlight.style.top = `${rect.top - 6}px`;
+  spotlight.style.left = `${rect.left - 6}px`;
+  spotlight.style.width = `${rect.width + 12}px`;
+  spotlight.style.height = `${rect.height + 12}px`;
+
+  const card = $("#tutorial-card");
+  let cardTop = rect.bottom + 14;
+  if (cardTop + 160 > window.innerHeight) cardTop = Math.max(14, rect.top - 160);
+  let cardLeft = Math.min(Math.max(14, rect.left), window.innerWidth - 316);
+  card.style.top = `${cardTop}px`;
+  card.style.left = `${cardLeft}px`;
+
+  $("#tutorial-step-count").textContent = `(${tutorialIndex + 1}/${TUTORIAL_STEPS.length})`;
+  $("#tutorial-title").textContent = step.title;
+  $("#tutorial-text").textContent = step.text;
+  $("#tutorial-next-btn").textContent = tutorialIndex === TUTORIAL_STEPS.length - 1 ? "Done" : "Next";
 }
 
 // ---- Master render ------------------------------------------------------
 
 function renderDashboard() {
   renderGreeting();
+  renderLevelWidget();
   renderSummaryCards();
   renderNextMove();
   renderAssignmentList();
@@ -1315,6 +1643,8 @@ function render() {
   if (state.currentView === "dashboard") renderDashboard();
   else if (state.currentView === "detail") renderDetailView(getAssignmentById(state.currentAssignmentId));
   else if (state.currentView === "history") renderHistoryView();
+  else if (state.currentView === "timer") renderTimerView();
+  else if (state.currentView === "settings") renderSettingsView();
   updateCountdowns();
   updateRelativeTimestamps();
 }
@@ -1324,17 +1654,13 @@ function render() {
    9. EVENT HANDLERS
    ===================================================================== */
 
-function populateDomainSuggestions() {
-  const domains = Array.from(new Set(state.assignments.map((a) => a.domain).filter(Boolean))).sort();
-  $("#domain-suggestions").innerHTML = domains.map((d) => `<option value="${escapeHTML(d)}">`).join("");
-}
-
 function openAssignmentModalForCreate() {
   $("#modal-assignment-title").textContent = "Add Assignment";
   $("#assignment-form").reset();
   $("#assignment-id-field").value = "";
   $("#field-status").value = "not-started";
   populateDomainSuggestions();
+  populateSubjectSuggestions();
   openModal("modal-assignment");
   $("#field-title").focus();
 }
@@ -1342,6 +1668,7 @@ function openAssignmentModalForCreate() {
 function openAssignmentModalForEdit(assignment) {
   $("#modal-assignment-title").textContent = "Edit Assignment";
   populateDomainSuggestions();
+  populateSubjectSuggestions();
   $("#assignment-id-field").value = assignment.id;
   $("#field-title").value = assignment.title;
   $("#field-description").value = assignment.description;
@@ -1522,75 +1849,44 @@ function handleDeleteAssignment(id) {
   );
 }
 
-function setupImportHandler() {
-  $("#settings-import-input").addEventListener("change", (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      try {
-        const parsed = JSON.parse(reader.result);
-        const incoming = Array.isArray(parsed) ? parsed : Array.isArray(parsed.assignments) ? parsed.assignments : null;
-        if (!incoming) throw new Error("Unrecognized format");
-
-        let imported = 0;
-        for (const raw of incoming) {
-          if (!raw || !raw.title || !raw.deadline) continue;
-          const assignment = createAssignmentFromForm({
-            title: raw.title, description: raw.description || "", domain: raw.domain || "", subject: raw.subject || "",
-            postedBy: raw.postedBy || "", postedDate: raw.postedDate || "", deadline: raw.deadline,
-            estimatedEffort: raw.estimatedEffort || "", notes: raw.notes || "", status: raw.status || "not-started",
-          });
-          assignment.card = ["green", "yellow", "red", "none"].includes(raw.card) ? raw.card : "none";
-          if (raw.review && typeof raw.review === "object") {
-            assignment.review.feedback = raw.review.feedback || "";
-            assignment.review.reviewedDate = raw.review.reviewedDate || null;
-          }
-          state.assignments.push(assignment);
-          imported++;
-        }
-        saveAssignments();
-        showToast(`Imported ${imported} assignment${imported === 1 ? "" : "s"} ✓`, "success");
-        render();
-      } catch (err) {
-        showToast("That file doesn't look like valid assignment data.", "error");
-      } finally {
-        e.target.value = "";
-      }
-    };
-    reader.readAsText(file);
-  });
-}
-
-function exportAssignments() {
-  const blob = new Blob([JSON.stringify(state.assignments, null, 2)], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "nexus-assignments-export.json";
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
-}
-
 function setupEventHandlers() {
-  // --- Welcome screen ---
-  $("#welcome-form").addEventListener("submit", (e) => {
-    e.preventDefault();
-    state.settings.name = $("#welcome-name").value.trim();
-    state.settings.language = $("#welcome-language").value;
-    state.settings.theme = $('input[name="theme"]:checked').value;
-    state.settings.gamification = $("#welcome-gamification").checked;
-    state.settings.onboarded = true;
-    saveSettings();
-    applyTheme(state.settings.theme);
-    completeOnboardingUI();
+  // --- Onboarding wizard ---
+  $all("[data-wizard-next]").forEach((btn) => btn.addEventListener("click", () => goToWizardStep(Number(btn.dataset.wizardNext))));
+  $all("[data-wizard-back]").forEach((btn) => btn.addEventListener("click", () => goToWizardStep(Number(btn.dataset.wizardBack))));
+
+  $("#welcome-create-assignment-btn").addEventListener("click", () => {
+    const title = $("#welcome-assignment-title").value.trim();
+    const subject = $("#welcome-assignment-subject").value.trim();
+    const deadlineLocal = $("#welcome-assignment-deadline").value;
+    if (!title || !subject || !deadlineLocal) {
+      showToast("Please fill in the title, subject, and deadline (or skip this step).", "error");
+      return;
+    }
+    const assignment = createAssignmentFromForm({
+      title, subject,
+      domain: $("#welcome-assignment-domain").value.trim(),
+      deadline: new Date(deadlineLocal).toISOString(),
+      status: "not-started",
+    });
+    state.assignments.push(assignment);
+    saveAssignments();
+    goToWizardStep(3);
   });
-  $("#welcome-skip-btn").addEventListener("click", () => {
-    state.settings.onboarded = true;
-    saveSettings();
-    completeOnboardingUI();
+  $("#welcome-skip-assignment-btn").addEventListener("click", () => goToWizardStep(3));
+  $("#welcome-finish-btn").addEventListener("click", finishOnboarding);
+  $("#welcome-skip-key-btn").addEventListener("click", finishOnboarding);
+
+  // --- Tutorial ---
+  $("#tutorial-next-btn").addEventListener("click", () => {
+    tutorialIndex++;
+    if (tutorialIndex >= TUTORIAL_STEPS.length) endTutorial();
+    else showTutorialStep();
+  });
+  $("#tutorial-skip-btn").addEventListener("click", endTutorial);
+
+  // --- Sidebar navigation ---
+  $all(".sidebar-nav-btn").forEach((btn) => {
+    btn.addEventListener("click", () => { showView(btn.dataset.view); render(); });
   });
 
   // --- Header ---
@@ -1599,10 +1895,7 @@ function setupEventHandlers() {
     saveSettings();
     applyTheme(state.settings.theme);
   });
-  $("#settings-btn").addEventListener("click", () => { populateSettingsModal(); openModal("modal-settings"); });
-  $("#nav-progress-btn").addEventListener("click", () => { showView("history"); render(); });
   $("#back-to-dashboard-btn").addEventListener("click", () => { showView("dashboard"); render(); });
-  $("#back-to-dashboard-btn-2").addEventListener("click", () => { showView("dashboard"); render(); });
 
   let searchDebounce;
   $("#search-input").addEventListener("input", (e) => {
@@ -1611,7 +1904,7 @@ function setupEventHandlers() {
     searchDebounce = setTimeout(() => { state.searchQuery = value; renderAssignmentList(); updateCountdowns(); }, 120);
   });
 
-  // --- Filters / sort ---
+  // --- Filters ---
   $("#filter-tabs").addEventListener("click", (e) => {
     const btn = e.target.closest(".filter-tab");
     if (!btn) return;
@@ -1622,8 +1915,15 @@ function setupEventHandlers() {
     renderAssignmentList();
     updateCountdowns();
   });
-  $("#sort-select").addEventListener("change", (e) => {
-    state.currentSort = e.target.value;
+
+  // --- Custom dropdowns: sort + group by ---
+  initCustomSelect("sort-dropdown", (value) => {
+    state.currentSort = value;
+    renderAssignmentList();
+    updateCountdowns();
+  });
+  initCustomSelect("groupby-dropdown", (value) => {
+    state.currentGroupBy = value;
     renderAssignmentList();
     updateCountdowns();
   });
@@ -1631,13 +1931,15 @@ function setupEventHandlers() {
   // --- Add assignment ---
   $("#add-assignment-btn").addEventListener("click", openAssignmentModalForCreate);
   $("#empty-add-btn").addEventListener("click", openAssignmentModalForCreate);
-  $("#empty-demo-btn").addEventListener("click", loadDemoData);
   $("#assignment-form").addEventListener("submit", handleAssignmentFormSubmit);
   $("#review-form").addEventListener("submit", handleReviewFormSubmit);
 
   // --- Generic modal close (X button, backdrop click, Escape) ---
   document.addEventListener("click", (e) => {
-    if (e.target.matches("[data-close-modal]")) closeModal(e.target.dataset.closeModal);
+    if (e.target.matches("[data-close-modal]") || e.target.closest("[data-close-modal]")) {
+      const closeBtn = e.target.matches("[data-close-modal]") ? e.target : e.target.closest("[data-close-modal]");
+      closeModal(closeBtn.dataset.closeModal);
+    }
     if (e.target.classList.contains("modal-overlay")) closeModal(e.target.id);
   });
   document.addEventListener("keydown", (e) => {
@@ -1707,83 +2009,13 @@ function setupEventHandlers() {
     }
   });
 
-  // --- Settings modal ---
-  $("#settings-name").addEventListener("change", (e) => { state.settings.name = e.target.value.trim(); saveSettings(); render(); });
-  $("#settings-language").addEventListener("change", (e) => { state.settings.language = e.target.value; saveSettings(); render(); });
-  $("#settings-theme-toggle").addEventListener("change", (e) => {
-    state.settings.theme = e.target.checked ? "dark" : "light";
-    saveSettings();
-    applyTheme(state.settings.theme);
+  // --- Study timer controls (delegated, since the view is rebuilt each visit) ---
+  document.addEventListener("click", (e) => {
+    if (e.target.closest("#timer-start-btn")) startStudyTimer();
+    else if (e.target.closest("#timer-pause-btn")) pauseStudyTimer();
+    else if (e.target.closest("#timer-stop-btn")) stopStudyTimer();
+    else if (e.target.closest("[data-preset]")) startStudyTimer(Number(e.target.closest("[data-preset]").dataset.preset));
   });
-  $("#settings-gamification-toggle").addEventListener("change", (e) => {
-    state.settings.gamification = e.target.checked;
-    saveSettings();
-    renderSettingsGamificationSummary();
-  });
-  $("#settings-api-key").addEventListener("change", (e) => {
-    state.settings.geminiApiKey = e.target.value.trim();
-    saveSettings();
-    showToast("Gemini API key saved to this browser.", "success");
-  });
-  $("#settings-clear-key-btn").addEventListener("click", () => {
-    state.settings.geminiApiKey = "";
-    saveSettings();
-    $("#settings-api-key").value = "";
-    showToast("API key removed.", "info");
-  });
-  $("#settings-demo-btn").addEventListener("click", loadDemoData);
-  $("#settings-remove-sample-btn").addEventListener("click", () => {
-    const sampleCount = state.assignments.filter((a) => a.isSample).length;
-    if (sampleCount === 0) { showToast("There's no sample data to remove.", "info"); return; }
-    showConfirm(
-      "Remove sample data?",
-      `This removes the ${sampleCount} demo assignment${sampleCount === 1 ? "" : "s"} loaded for demonstration. Your own assignments are not affected.`,
-      () => {
-        state.assignments = state.assignments.filter((a) => !a.isSample);
-        saveAssignments();
-        showToast("Sample data removed.", "info");
-        showView("dashboard");
-        render();
-      },
-      "Remove"
-    );
-  });
-  $("#settings-import-btn").addEventListener("click", () => $("#settings-import-input").click());
-  $("#settings-export-btn").addEventListener("click", exportAssignments);
-  $("#settings-clear-btn").addEventListener("click", () => {
-    showConfirm(
-      "Clear all data?",
-      "This permanently deletes all your assignments and gamification progress from this browser. Your name, language and theme preferences are kept. This cannot be undone.",
-      () => {
-        state.assignments = [];
-        state.gamification = defaultGamification();
-        saveAssignments();
-        saveGamification();
-        showToast("All assignment data cleared.", "info");
-        showView("dashboard");
-        render();
-      },
-      "Clear everything"
-    );
-  });
-
-  setupImportHandler();
-}
-
-function loadDemoData() {
-  const sample = buildSampleAssignments();
-  state.assignments = state.assignments.concat(sample);
-  saveAssignments();
-  closeAllModals();
-  showToast("Demo data loaded ✓", "success");
-  showView("dashboard");
-  render();
-}
-
-function completeOnboardingUI() {
-  $("#welcome-screen").classList.add("hidden");
-  $("#app").classList.remove("hidden");
-  render();
 }
 
 
@@ -1795,13 +2027,14 @@ function init() {
   state.assignments = loadAssignments();
   state.settings = loadSettings();
   state.gamification = loadGamification();
+  state.customSubjects = loadCustomSubjects();
 
   applyTheme(state.settings.theme);
-  updateStreakOnVisit();
   setupEventHandlers();
 
   if (state.settings.onboarded) {
     $("#app").classList.remove("hidden");
+    if (!state.settings.tutorialSeen) setTimeout(startTutorial, 400);
   } else {
     $("#welcome-screen").classList.remove("hidden");
   }
