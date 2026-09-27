@@ -72,10 +72,12 @@ your own browser — nothing is sent anywhere except the specific assignment tex
 review feedback needed for the Gemini call you trigger. Clearing your browser data or
 using "Clear All Data" in Settings removes it for good.
 
-## Study Timer
+## Study Timer — "Focus Grove"
 
 A separate section (sidebar → **Study Timer**) for focused study sessions: pick a
-15/25/45/60-minute preset and a tree grows through visible stages as you focus. Only
-fully-completed sessions are logged — Settings has no bearing here, it's always on.
-Your session count and best day (most sessions completed in a single day) are tracked
-under **Progress**.
+15/25/50-minute preset or use the +/- 5 minute stepper to set any length you want, then
+watch a small pixel plant grow through six stages on a `<canvas>`, ending in a bloom of
+particles and a chime when it finishes. Only fully-completed sessions are logged —
+pausing or resetting logs nothing. Your session count, today's count, and best day
+(most sessions completed in a single day) are tracked under **Progress** and right on
+the timer itself.

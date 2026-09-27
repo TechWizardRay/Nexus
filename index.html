@@ -40,6 +40,17 @@
 </defs></svg>
 
 <!-- ============================= -->
+<!-- SPLASH INTRO (plays once per page load, before the welcome/app) -->
+<!-- ============================= -->
+<div id="splash-screen" class="splash-screen" aria-hidden="true">
+  <div class="ambient-blobs"></div>
+  <div class="splash-content" id="splash-content">
+    <img src="assets/nexus-icon.svg" alt="" class="splash-icon">
+    <span class="splash-wordmark">Nexus</span>
+  </div>
+</div>
+
+<!-- ============================= -->
 <!-- TOAST CONTAINER (global)      -->
 <!-- ============================= -->
 <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
@@ -64,6 +75,7 @@
 <!-- WELCOME / FIRST-TIME WIZARD   -->
 <!-- ============================= -->
 <div id="welcome-screen" class="welcome-screen hidden">
+  <div class="ambient-blobs"></div>
   <div class="welcome-card">
     <div class="welcome-logo">Nexus</div>
 

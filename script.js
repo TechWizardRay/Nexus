@@ -360,7 +360,6 @@ function startTimeLoops() {
   updateRelativeTimestamps();
   setInterval(updateCountdowns, 1000);
   setInterval(updateRelativeTimestamps, 60000);
-  setInterval(tickStudyTimer, 1000);
 }
 
 
@@ -657,69 +656,76 @@ function computeEarnedBadges() {
 
 
 /* =====================================================================
-   7. STUDY TIMER
-   A simple preset countdown with a tree that grows through visible
-   stages as the session progresses. Only fully-completed sessions are
-   logged; pausing/stopping early logs nothing.
+   7. STUDY TIMER — "Focus Grove"
+   A countdown (presets or a +/- 5-minute stepper for any custom length)
+   that grows a small pixel plant, drawn on a <canvas>, through six
+   stages as the session progresses. Only a session that finishes
+   naturally gets logged; pausing/resetting early logs nothing.
+   The canvas/animation engine below runs entirely on its own
+   requestAnimationFrame loop — see initGroveCanvas()/groveLoop().
    ===================================================================== */
 
-const TIMER_PRESETS = [15, 25, 45, 60];
+const TIMER_PRESETS = [15, 25, 50];
 
 const timerState = {
   running: false,
+  finished: false,
   durationMinutes: 25,
   totalSeconds: 25 * 60,
   remainingSeconds: 25 * 60,
-  intervalId: null,
+  endAt: 0,
+  audioCtx: null,
+  groveCanvasEl: null,   // the <canvas> node the current loop owns; used to detect a stale loop
+  groveAnimFrameId: null,
 };
 
-function timerTreeStage(fractionElapsed) {
-  if (fractionElapsed >= 0.85) return 4;
-  if (fractionElapsed >= 0.6) return 3;
-  if (fractionElapsed >= 0.4) return 2;
-  if (fractionElapsed >= 0.2) return 1;
-  return 0;
+function setTimerMinutes(minutes) {
+  minutes = Math.max(5, Math.min(120, minutes));
+  timerState.durationMinutes = minutes;
+  timerState.totalSeconds = minutes * 60;
+  if (!timerState.running) {
+    timerState.remainingSeconds = minutes * 60;
+    timerState.finished = false;
+  }
+  renderTimerView();
 }
 
-function startStudyTimer(minutes) {
-  if (timerState.running) return;
-  if (minutes) {
-    timerState.durationMinutes = minutes;
-    timerState.totalSeconds = minutes * 60;
-    timerState.remainingSeconds = minutes * 60;
+function startStudyTimer() {
+  if (timerState.finished) {
+    timerState.finished = false;
+    timerState.remainingSeconds = timerState.totalSeconds;
   }
+  if (timerState.running) return;
   timerState.running = true;
+  timerState.endAt = Date.now() + timerState.remainingSeconds * 1000;
+  ensureGroveAudioContext();
   renderTimerView();
 }
 
 function pauseStudyTimer() {
+  if (!timerState.running) return;
   timerState.running = false;
+  timerState.remainingSeconds = Math.max(0, (timerState.endAt - Date.now()) / 1000);
   renderTimerView();
 }
 
-function stopStudyTimer() {
+function resetStudyTimer() {
   timerState.running = false;
+  timerState.finished = false;
   timerState.remainingSeconds = timerState.totalSeconds;
   renderTimerView();
-}
-
-function tickStudyTimer() {
-  if (!timerState.running) return;
-  timerState.remainingSeconds -= 1;
-  if (timerState.remainingSeconds <= 0) {
-    completeStudySession();
-    return;
-  }
-  updateTimerDisplay();
 }
 
 function completeStudySession() {
   timerState.running = false;
+  timerState.finished = true;
+  timerState.remainingSeconds = 0;
   const sessions = loadStudySessions();
   sessions.push({ date: new Date().toISOString().slice(0, 10), durationMinutes: timerState.durationMinutes });
   saveStudySessions(sessions);
-  timerState.remainingSeconds = timerState.totalSeconds;
   awardXP(XP_REWARDS.completeStudySession);
+  spawnGroveBloom();
+  playGroveChime();
   showToast("Session complete — your tree is fully grown 🌳", "success");
   renderTimerView();
 }
@@ -728,8 +734,176 @@ function computeStudyStats() {
   const sessions = loadStudySessions();
   const perDay = {};
   sessions.forEach((s) => { perDay[s.date] = (perDay[s.date] || 0) + 1; });
+  const today = new Date().toISOString().slice(0, 10);
   const bestDay = Object.values(perDay).reduce((max, n) => Math.max(max, n), 0);
-  return { totalSessions: sessions.length, bestDay, sessions };
+  return { totalSessions: sessions.length, bestDay, grownToday: perDay[today] || 0, sessions };
+}
+
+// ---- Pixel-plant canvas engine ------------------------------------------
+// Six hand-drawn frames (15x16 "pixels") reused verbatim from a standalone
+// prototype (github.com/ — the user's own "Focus Grove" project); only the
+// surrounding chrome was restyled to match Nexus's theme tokens.
+
+const GROVE_E = "...............";
+function growPad(rows) {
+  while (rows.length < 14) rows.unshift(GROVE_E);
+  return rows.concat([".....DDDDD.....", "....DDDDDDD...."]);
+}
+const GROVE_FRAMES = [
+  growPad([GROVE_E, GROVE_E, GROVE_E, GROVE_E, GROVE_E, GROVE_E, GROVE_E, GROVE_E, GROVE_E, GROVE_E, GROVE_E, GROVE_E, GROVE_E, ".......s......."]),
+  growPad([GROVE_E, GROVE_E, GROVE_E, GROVE_E, GROVE_E, GROVE_E, GROVE_E, GROVE_E, GROVE_E, GROVE_E, GROVE_E, GROVE_E, ".......g.......", ".......g......."]),
+  growPad([GROVE_E, GROVE_E, GROVE_E, GROVE_E, GROVE_E, GROVE_E, GROVE_E, GROVE_E, GROVE_E, GROVE_E, "......GgG......", ".......g.......", ".......g.......", ".......g......."]),
+  growPad([GROVE_E, GROVE_E, GROVE_E, GROVE_E, GROVE_E, GROVE_E, GROVE_E, "......GGG......", ".....GGgGG.....", "......GgG......", ".......g.......", ".......g.......", ".......g.......", ".......g......."]),
+  growPad([GROVE_E, GROVE_E, GROVE_E, GROVE_E, GROVE_E, ".....CCCCC.....", "....CCCCCCC...", "...CCCCCCCCC...", "....CCCCCCC....", "......TTT......", "......TTT......", "......TTT......", "......TTT......", "......TTT......"]),
+  growPad(["....CCCCCCC....", "...CCCCCCCCC...", "..CCCCCCCCCCC..", "..CBCCCCCCCBC..", "..CCCCCCCCCCC..", "...CCCBCBCCC...", "....CCCCCCC....", "......TTT......", "......TTT......", "......TTT......", "......TTT......", "......TTT......"]),
+];
+const GROVE_COLOR = { D: "#6b4a2b", s: "#d9b26a", g: "#82dd82", G: "#57c463", T: "#855a34", C: "#46b06a", B: "#c77dff" };
+const GROVE_PHASES = ["SEED", "SPROUT", "SEEDLING", "SAPLING", "YOUNG TREE", "IN BLOOM"];
+const GROVE_COLS = 15, GROVE_ROWS = 16, GROVE_CELL = 16, GROVE_LOGW = 260, GROVE_LOGH = 340;
+const GROVE_PAD_X = (GROVE_LOGW - GROVE_COLS * GROVE_CELL) / 2, GROVE_PAD_Y = GROVE_LOGH - GROVE_ROWS * GROVE_CELL - 6;
+
+const groveStars = [];
+for (let i = 0; i < 46; i++) {
+  groveStars.push({ x: Math.random() * GROVE_LOGW, y: Math.random() * (GROVE_PAD_Y + GROVE_CELL * 3), r: Math.random() < 0.2 ? 1.6 : 1, ph: Math.random() * 6.28 });
+}
+const groveParticles = [];
+
+function groveFrameIndex(frac) {
+  if (frac >= 1 || frac >= 0.93) return 5;
+  if (frac >= 0.70) return 4;
+  if (frac >= 0.45) return 3;
+  if (frac >= 0.22) return 2;
+  if (frac >= 0.06) return 1;
+  return 0;
+}
+
+function drawGroveSprite(ctx, idx, sway) {
+  const frame = GROVE_FRAMES[idx];
+  for (let r = 0; r < GROVE_ROWS; r++) {
+    const row = frame[r];
+    for (let c = 0; c < GROVE_COLS; c++) {
+      const ch = row.charAt(c);
+      if (ch === "." || ch === "") continue;
+      const col = GROVE_COLOR[ch];
+      if (!col) continue;
+      const x = Math.round(GROVE_PAD_X + c * GROVE_CELL + sway), y = GROVE_PAD_Y + r * GROVE_CELL;
+      ctx.fillStyle = col;
+      ctx.fillRect(x, y, GROVE_CELL, GROVE_CELL);
+      if (ch === "C" || ch === "G" || ch === "T") {
+        ctx.fillStyle = "rgba(255,255,255,0.10)"; ctx.fillRect(x, y, GROVE_CELL, 2);
+        ctx.fillStyle = "rgba(0,0,0,0.16)"; ctx.fillRect(x, y + GROVE_CELL - 2, GROVE_CELL, 2);
+      }
+      if (ch === "B") { ctx.fillStyle = "rgba(255,255,255,0.25)"; ctx.fillRect(x + 4, y + 3, 3, 3); }
+    }
+  }
+}
+
+function drawGroveScene(ctx, t, frac, idx, reduceMotion) {
+  ctx.clearRect(0, 0, GROVE_LOGW, GROVE_LOGH);
+  const sky = ctx.createLinearGradient(0, 0, 0, GROVE_PAD_Y + GROVE_CELL * 4);
+  sky.addColorStop(0, "#241338"); sky.addColorStop(1, "#150c22");
+  ctx.fillStyle = sky; ctx.fillRect(0, 0, GROVE_LOGW, GROVE_PAD_Y + GROVE_CELL * 4);
+
+  groveStars.forEach((s) => {
+    const a = reduceMotion ? 0.5 : (0.35 + 0.35 * Math.sin(t / 650 + s.ph));
+    ctx.fillStyle = `rgba(214,196,255,${a.toFixed(2)})`;
+    ctx.fillRect(Math.round(s.x), Math.round(s.y), s.r, s.r);
+  });
+
+  const cx = GROVE_LOGW / 2, cy = GROVE_PAD_Y + GROVE_CELL * 8;
+  const glow = ctx.createRadialGradient(cx, cy, 4, cx, cy, 120);
+  const ga = (0.05 + idx * 0.055).toFixed(3);
+  glow.addColorStop(0, `rgba(176,97,255,${ga})`); glow.addColorStop(1, "rgba(176,97,255,0)");
+  ctx.fillStyle = glow; ctx.fillRect(0, 0, GROVE_LOGW, GROVE_LOGH);
+
+  const sway = (reduceMotion || idx < 2) ? 0 : Math.sin(t / 900) * 1.4;
+  drawGroveSprite(ctx, idx, sway);
+
+  for (let p = groveParticles.length - 1; p >= 0; p--) {
+    const q = groveParticles[p];
+    q.life -= 0.016;
+    if (q.life <= 0) { groveParticles.splice(p, 1); continue; }
+    q.y += q.vy; q.x += q.vx; q.vy += 0.02;
+    ctx.fillStyle = `rgba(${q.col},${Math.max(0, q.life).toFixed(2)})`;
+    ctx.fillRect(Math.round(q.x), Math.round(q.y), 2, 2);
+  }
+}
+
+function spawnGroveBloom() {
+  const cx = GROVE_LOGW / 2, cy = GROVE_PAD_Y + GROVE_CELL * 4.5;
+  for (let i = 0; i < 22; i++) {
+    groveParticles.push({
+      x: cx + (Math.random() * 70 - 35), y: cy + (Math.random() * 50 - 25),
+      vx: (Math.random() - 0.5) * 0.7, vy: -(0.5 + Math.random() * 0.9),
+      life: 1 + Math.random() * 0.6, col: Math.random() < 0.5 ? "199,125,255" : "120,225,140",
+    });
+  }
+}
+
+function ensureGroveAudioContext() {
+  if (timerState.audioCtx) { if (timerState.audioCtx.state === "suspended") timerState.audioCtx.resume(); return; }
+  try { timerState.audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch { /* no audio support — silent is fine */ }
+}
+
+function playGroveChime() {
+  try {
+    ensureGroveAudioContext();
+    const ac = timerState.audioCtx;
+    if (!ac) return;
+    const notes = [523.25, 659.25, 783.99, 1046.5], t0 = ac.currentTime;
+    notes.forEach((f, i) => {
+      const o = ac.createOscillator(), g = ac.createGain();
+      o.type = "triangle"; o.frequency.value = f;
+      const s = t0 + i * 0.14;
+      g.gain.setValueAtTime(0, s);
+      g.gain.linearRampToValueAtTime(0.18, s + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, s + 0.5);
+      o.connect(g); g.connect(ac.destination);
+      o.start(s); o.stop(s + 0.55);
+    });
+  } catch { /* Web Audio unavailable — the chime is a nicety, not required */ }
+}
+
+function formatClock(seconds) {
+  seconds = Math.max(0, Math.ceil(seconds));
+  const m = Math.floor(seconds / 60), s = seconds % 60;
+  return `${m < 10 ? "0" : ""}${m}:${s < 10 ? "0" : ""}${s}`;
+}
+
+// Initializes (or re-initializes, after renderTimerView() rebuilt the DOM)
+// the canvas + its own requestAnimationFrame loop. A loop stops itself the
+// moment its canvas node is no longer the live one — see groveLoop().
+function initGroveCanvas() {
+  const canvas = $("#timer-canvas");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  canvas.width = GROVE_LOGW * dpr; canvas.height = GROVE_LOGH * dpr;
+  canvas.style.width = `${GROVE_LOGW}px`; canvas.style.height = `${GROVE_LOGH}px`;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.imageSmoothingEnabled = false;
+
+  if (timerState.groveAnimFrameId) cancelAnimationFrame(timerState.groveAnimFrameId);
+  timerState.groveCanvasEl = canvas;
+  const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function loop(t) {
+    if (timerState.groveCanvasEl !== $("#timer-canvas")) return; // a newer render() replaced this canvas — stop
+    if (timerState.running) {
+      timerState.remainingSeconds = (timerState.endAt - Date.now()) / 1000;
+      if (timerState.remainingSeconds <= 0) { completeStudySession(); return; }
+    }
+    if (!$("#view-timer").classList.contains("hidden")) {
+      const frac = timerState.finished ? 1 : (1 - timerState.remainingSeconds / timerState.totalSeconds);
+      const idx = timerState.finished ? 5 : groveFrameIndex(frac);
+      const clockEl = $("#timer-clock"), phaseEl = $("#timer-phase");
+      if (clockEl) clockEl.textContent = formatClock(timerState.remainingSeconds);
+      if (phaseEl) phaseEl.textContent = GROVE_PHASES[idx];
+      drawGroveScene(ctx, t, frac, idx, reduceMotion);
+    }
+    timerState.groveAnimFrameId = requestAnimationFrame(loop);
+  }
+  timerState.groveAnimFrameId = requestAnimationFrame(loop);
 }
 
 
@@ -1292,29 +1466,46 @@ function renderGamificationSectionHTML() {
 function renderTimerView() {
   const container = $("#timer-content");
   const stats = computeStudyStats();
-  const fraction = 1 - timerState.remainingSeconds / timerState.totalSeconds;
-  const stage = timerTreeStage(fraction);
-  const trunkHeight = 14 + stage * 10;
-  const leafSize = 30 + stage * 22;
+  const groveMax = 10;
+  let groveGlyphs = "";
+  for (let i = 0; i < groveMax; i++) groveGlyphs += i < stats.grownToday ? "🌳" : "<span class='empty'>🌱</span>";
+  if (stats.grownToday > groveMax) groveGlyphs += ` +${stats.grownToday - groveMax}`;
+
+  const goLabel = timerState.finished ? "Plant &amp; Start" : timerState.running ? "Pause" : (timerState.remainingSeconds < timerState.totalSeconds ? "Resume" : "Plant &amp; Start");
+  const msg = timerState.finished
+    ? "Fully grown — a tree for the grove. Nice focus."
+    : timerState.running
+      ? "Stay with it — your tree is growing."
+      : (timerState.remainingSeconds < timerState.totalSeconds ? "Paused. Pick it back up when you're ready." : "Set a length and plant your focus.");
 
   container.innerHTML = `
     <div class="timer-layout">
       <div class="timer-stage">
-        <div class="timer-tree-scene">
-          <div class="timer-tree-ground"></div>
-          ${stage > 0 ? `<div class="timer-tree-trunk" style="height:${trunkHeight}px;"></div>` : ""}
-          ${stage > 0 ? `<div class="timer-tree-leaves" style="width:${leafSize}px; height:${leafSize}px; bottom:${trunkHeight + 6}px;"></div>` : ""}
+        <div class="timer-screen">
+          <div class="timer-phase-label" id="timer-phase"></div>
+          <div class="timer-clock" id="timer-clock"></div>
+          <canvas id="timer-canvas" width="260" height="340" aria-label="A pixel plant that grows as you focus"></canvas>
+          <div class="timer-canvas-msg">${msg}</div>
         </div>
-        <div class="timer-stage-label" id="timer-stage-label"></div>
-        <div class="timer-clock" id="timer-clock"></div>
+
         <div class="timer-presets">
-          ${TIMER_PRESETS.map((m) => `<button type="button" class="timer-preset-btn ${m === timerState.durationMinutes ? "active" : ""}" data-preset="${m}" ${timerState.running ? "disabled" : ""}>${m} min</button>`).join("")}
+          ${TIMER_PRESETS.map((m) => `<button type="button" class="timer-preset-btn ${m === timerState.durationMinutes ? "active" : ""}" data-preset="${m}">${m}<small>${m === 15 ? "quick" : m === 25 ? "pomodoro" : "deep"}</small></button>`).join("")}
         </div>
+
+        <div class="timer-stepper-row">
+          <button type="button" class="icon-btn" id="timer-minus-btn" aria-label="Decrease by 5 minutes">−</button>
+          <span class="timer-stepper-value"><b>${timerState.durationMinutes}</b> min</span>
+          <button type="button" class="icon-btn" id="timer-plus-btn" aria-label="Increase by 5 minutes">+</button>
+        </div>
+
         <div class="timer-controls">
-          ${timerState.running
-            ? `<button type="button" class="btn btn-secondary" id="timer-pause-btn">${iconTag("pause", 16)} Pause</button>`
-            : `<button type="button" class="btn btn-primary" id="timer-start-btn">${iconTag("play", 16)} Start</button>`}
-          <button type="button" class="btn btn-ghost" id="timer-stop-btn">${iconTag("stop", 16)} Reset</button>
+          <button type="button" class="btn btn-primary" id="timer-go-btn">${goLabel}</button>
+          <button type="button" class="btn btn-ghost" id="timer-reset-btn">Reset</button>
+        </div>
+
+        <div class="timer-grove-row">
+          <span>Grown today · <b>${stats.grownToday}</b></span>
+          <span class="timer-grove-glyphs">${groveGlyphs}</span>
         </div>
       </div>
       <div class="timer-stats">
@@ -1327,31 +1518,7 @@ function renderTimerView() {
       </div>
     </div>
   `;
-  updateTimerDisplay();
-}
-
-function updateTimerDisplay() {
-  const clockEl = $("#timer-clock");
-  const labelEl = $("#timer-stage-label");
-  if (!clockEl) return; // timer view not currently built (safe no-op)
-  const m = Math.floor(timerState.remainingSeconds / 60);
-  const s = timerState.remainingSeconds % 60;
-  clockEl.textContent = `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
-  const fraction = 1 - timerState.remainingSeconds / timerState.totalSeconds;
-  const stageNames = ["Planting a seed", "Sprouting", "Growing steadily", "Almost there", "Fully grown"];
-  if (labelEl) labelEl.textContent = stageNames[timerTreeStage(fraction)];
-
-  // Update the tree visual live without a full re-render.
-  const stage = timerTreeStage(fraction);
-  const trunk = $(".timer-tree-trunk");
-  const leaves = $(".timer-tree-leaves");
-  if (trunk) trunk.style.height = `${14 + stage * 10}px`;
-  if (leaves) {
-    const size = 30 + stage * 22;
-    leaves.style.width = `${size}px`;
-    leaves.style.height = `${size}px`;
-    leaves.style.bottom = `${14 + stage * 10 + 6}px`;
-  }
+  initGroveCanvas();
 }
 
 // ---- Settings view ---------------------------------------------------------
@@ -2011,10 +2178,11 @@ function setupEventHandlers() {
 
   // --- Study timer controls (delegated, since the view is rebuilt each visit) ---
   document.addEventListener("click", (e) => {
-    if (e.target.closest("#timer-start-btn")) startStudyTimer();
-    else if (e.target.closest("#timer-pause-btn")) pauseStudyTimer();
-    else if (e.target.closest("#timer-stop-btn")) stopStudyTimer();
-    else if (e.target.closest("[data-preset]")) startStudyTimer(Number(e.target.closest("[data-preset]").dataset.preset));
+    if (e.target.closest("#timer-go-btn")) { timerState.running ? pauseStudyTimer() : startStudyTimer(); }
+    else if (e.target.closest("#timer-reset-btn")) resetStudyTimer();
+    else if (e.target.closest("#timer-plus-btn")) setTimerMinutes(timerState.durationMinutes + 5);
+    else if (e.target.closest("#timer-minus-btn")) setTimerMinutes(timerState.durationMinutes - 5);
+    else if (e.target.closest("[data-preset]")) setTimerMinutes(Number(e.target.closest("[data-preset]").dataset.preset));
   });
 }
 
@@ -2022,6 +2190,38 @@ function setupEventHandlers() {
 /* =====================================================================
    10. INITIALIZATION
    ===================================================================== */
+
+// A short, skippable title-reveal: the mark fades in alone, nudges left,
+// "Nexus" arrives from the right, then the whole splash fades out and
+// onComplete() runs. Respects prefers-reduced-motion by skipping straight
+// to onComplete(); a click, Enter, Space or Escape skips it early too.
+function playSplashIntro(onComplete) {
+  const splash = $("#splash-screen");
+  const content = $("#splash-content");
+  const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let timers = [];
+  let done = false;
+
+  function finish() {
+    if (done) return;
+    done = true;
+    timers.forEach(clearTimeout);
+    splash.classList.add("hidden");
+    document.removeEventListener("keydown", onKey);
+    onComplete();
+  }
+  function onKey(e) { if (e.key === "Enter" || e.key === " " || e.key === "Escape") finish(); }
+
+  if (reduceMotion) { finish(); return; }
+
+  splash.addEventListener("click", finish, { once: true });
+  document.addEventListener("keydown", onKey);
+
+  timers.push(setTimeout(() => content.classList.add("splash-ready"), 80));
+  timers.push(setTimeout(() => content.classList.add("splash-reveal"), 780));
+  timers.push(setTimeout(() => splash.classList.add("splash-fade-out"), 1680));
+  timers.push(setTimeout(finish, 2080));
+}
 
 function init() {
   state.assignments = loadAssignments();
@@ -2031,16 +2231,17 @@ function init() {
 
   applyTheme(state.settings.theme);
   setupEventHandlers();
-
-  if (state.settings.onboarded) {
-    $("#app").classList.remove("hidden");
-    if (!state.settings.tutorialSeen) setTimeout(startTutorial, 400);
-  } else {
-    $("#welcome-screen").classList.remove("hidden");
-  }
-
   render();
   startTimeLoops();
+
+  playSplashIntro(() => {
+    if (state.settings.onboarded) {
+      $("#app").classList.remove("hidden");
+      if (!state.settings.tutorialSeen) setTimeout(startTutorial, 400);
+    } else {
+      $("#welcome-screen").classList.remove("hidden");
+    }
+  });
 }
 
 document.addEventListener("DOMContentLoaded", init);
