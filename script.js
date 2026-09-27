@@ -162,11 +162,16 @@ function isActionable(assignment) {
   return assignment.status !== "completed" && assignment.status !== "locked";
 }
 
+// No deadline (imported assignments often have none) means never overdue/due-soon —
+// without this guard, new Date(null) resolves to the 1970 epoch and every
+// no-deadline assignment reads as maximally overdue.
 function isOverdue(assignment) {
+  if (!assignment.deadline) return false;
   return isActionable(assignment) && new Date(assignment.deadline).getTime() < Date.now();
 }
 
 function isDueSoon(assignment, windowHours = 48) {
+  if (!assignment.deadline) return false;
   if (!isActionable(assignment) || isOverdue(assignment)) return false;
   const hoursLeft = (new Date(assignment.deadline).getTime() - Date.now()) / 3600000;
   return hoursLeft >= 0 && hoursLeft <= windowHours;
@@ -210,6 +215,12 @@ function searchAssignments(assignments, query) {
 
 const STATUS_ORDER = ["not-started", "in-progress", "submitted", "completed", "locked"];
 
+// No-deadline assignments sort to the end of any deadline-based ordering
+// instead of the 1970 epoch (which is what new Date(null) resolves to).
+function deadlineSortValue(a) {
+  return a.deadline ? new Date(a.deadline).getTime() : Infinity;
+}
+
 function sortAssignments(assignments, sortKey) {
   const list = assignments.slice();
   switch (sortKey) {
@@ -219,10 +230,10 @@ function sortAssignments(assignments, sortKey) {
       return list.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
     case "status":
       return list.sort((a, b) => STATUS_ORDER.indexOf(a.status) - STATUS_ORDER.indexOf(b.status)
-        || new Date(a.deadline) - new Date(b.deadline));
+        || deadlineSortValue(a) - deadlineSortValue(b));
     case "deadline":
     default:
-      return list.sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
+      return list.sort((a, b) => deadlineSortValue(a) - deadlineSortValue(b));
   }
 }
 
@@ -246,8 +257,10 @@ function pickNextMove(assignments) {
     if (a.card === "yellow" || a.card === "red") { score += 30; reasons.push("needs-improvement"); }
     if (a.status === "not-started") { score += 10; reasons.push("not-started"); }
 
-    const hoursLeft = (new Date(a.deadline).getTime() - Date.now()) / 3600000;
-    score += Math.max(0, 72 - Math.min(hoursLeft, 72)) * 0.5;
+    if (a.deadline) {
+      const hoursLeft = (new Date(a.deadline).getTime() - Date.now()) / 3600000;
+      score += Math.max(0, 72 - Math.min(hoursLeft, 72)) * 0.5;
+    }
 
     if (score > bestScore) {
       bestScore = score;
@@ -287,6 +300,7 @@ function buildNextMoveExplanation(pick, allAssignments) {
 function formatDeadlineCountdown(deadlineISO, status) {
   if (status === "completed") return "Completed";
   if (status === "locked") return "Locked";
+  if (!deadlineISO || deadlineISO === "null") return "No deadline";
   const diffMs = new Date(deadlineISO).getTime() - Date.now();
   const overdue = diffMs < 0;
   const abs = Math.abs(diffMs);
@@ -306,6 +320,7 @@ function formatDeadlineCountdown(deadlineISO, status) {
 
 function countdownClass(deadlineISO, status) {
   if (status === "completed" || status === "locked") return "";
+  if (!deadlineISO || deadlineISO === "null") return "";
   const diffMs = new Date(deadlineISO).getTime() - Date.now();
   if (diffMs < 0) return "overdue";
   if (diffMs <= 48 * 3600 * 1000) return "due-soon";
@@ -1596,7 +1611,13 @@ function renderSettingsView() {
 
     <div class="settings-group">
       <h3>Data</h3>
+      <p class="settings-hint">
+        Import reads a JSON file straight from your device with JavaScript's FileReader API and writes it into this
+        browser's own local storage — nothing is uploaded anywhere, and nobody else who opens Nexus ever sees it.
+      </p>
       <div class="settings-data-actions">
+        <button type="button" id="settings-import-btn" class="btn btn-secondary">Import My Data</button>
+        <input type="file" id="settings-import-file" accept="application/json" hidden>
         <button type="button" id="settings-export-btn" class="btn btn-secondary">Export My Data</button>
         <button type="button" id="settings-clear-btn" class="btn btn-danger">Clear All Data</button>
       </div>
@@ -1648,6 +1669,21 @@ function renderSettingsView() {
       }
     });
   });
+  $("#settings-import-btn").addEventListener("click", () => $("#settings-import-file").click());
+  $("#settings-import-file").addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        importAssignmentsFromRaw(JSON.parse(reader.result));
+      } catch (err) {
+        showToast("Couldn't read that file — make sure it's valid Nexus JSON.", "error");
+      }
+      e.target.value = "";
+    };
+    reader.readAsText(file);
+  });
   $("#settings-export-btn").addEventListener("click", exportAssignments);
   $("#settings-clear-btn").addEventListener("click", () => {
     showConfirm(
@@ -1670,6 +1706,66 @@ function renderSettingsView() {
     render();
     setTimeout(startTutorial, 60);
   });
+}
+
+// Accepts either a full exported-assignment array or a plain array of
+// partial records (title/description/domain/subject/status/card/review/...)
+// and merges them into this browser's own assignments — never touches a
+// server, so it only ever affects the device that runs it.
+function importAssignmentsFromRaw(rawList) {
+  if (!Array.isArray(rawList)) {
+    showToast("That file isn't a list of assignments.", "error");
+    return;
+  }
+  const existingKeys = new Set(state.assignments.map((a) => `${a.title}::${a.subject}`.toLowerCase()));
+  const nowISO = new Date().toISOString();
+  let imported = 0;
+  let skipped = 0;
+
+  for (const raw of rawList) {
+    if (!raw || !raw.title) { skipped++; continue; }
+    const key = `${raw.title}::${raw.subject || ""}`.toLowerCase();
+    if (existingKeys.has(key)) { skipped++; continue; }
+    existingKeys.add(key);
+
+    const assignment = {
+      id: generateId(),
+      title: String(raw.title).trim(),
+      description: (raw.description || "").trim(),
+      domain: (raw.domain || "").trim(),
+      subject: (raw.subject || "").trim(),
+      postedBy: (raw.postedBy || "").trim(),
+      postedDate: raw.postedDate || null,
+      deadline: raw.deadline || null,
+      estimatedEffort: (raw.estimatedEffort || "").trim(),
+      notes: (raw.notes || "").trim(),
+      status: raw.status || "not-started",
+      card: raw.card || "none",
+      review: {
+        feedback: (raw.review && raw.review.feedback) || "",
+        reviewedDate: (raw.review && raw.review.reviewedDate) || null,
+        analysis: (raw.review && raw.review.analysis) || null,
+      },
+      aiAnalysis: raw.aiAnalysis || null,
+      timeline: Array.isArray(raw.timeline) ? raw.timeline : [],
+      createdAt: raw.createdAt || nowISO,
+      updatedAt: nowISO,
+    };
+    if (assignment.timeline.length === 0) addTimelineEvent(assignment, "Imported");
+    state.assignments.push(assignment);
+    imported++;
+  }
+
+  if (imported > 0) {
+    saveAssignments();
+    render();
+  }
+  showToast(
+    imported > 0
+      ? `Imported ${imported} assignment${imported === 1 ? "" : "s"}${skipped > 0 ? ` (skipped ${skipped} already in your data)` : ""}.`
+      : "Nothing new to import — those assignments are already in your data.",
+    imported > 0 ? "success" : "info"
+  );
 }
 
 function exportAssignments() {
