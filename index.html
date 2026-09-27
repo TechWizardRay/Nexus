@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexus — Understand. Prioritize. Improve. Progress.</title>
+<meta name="description" content="Nexus is a persistent, AI-assisted academic assignment mentor.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============================= -->
+<!-- INLINE ICON DEFINITIONS       -->
+<!-- Referenced everywhere via <svg class="icon"><use href="#icon-name"/></svg> -->
+<!-- ============================= -->
+<svg class="icon-defs" aria-hidden="true"><defs>
+  <symbol id="icon-moon" viewBox="0 0 24 24"><path d="M21 12.6A9 9 0 1 1 11.4 3a7 7 0 0 0 9.6 9.6Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v3M12 18.5v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2.5 12h3M18.5 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="icon-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 3.5v2.1M12 18.4v2.1M20.5 12h-2.1M5.6 12H3.5M17.5 6.5l-1.5 1.5M8 16l-1.5 1.5M17.5 17.5L16 16M8 8 6.5 6.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="icon-home" viewBox="0 0 24 24"><path d="M4 11.5 12 4l8 7.5M6 10v9h5v-5h2v5h5v-9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="icon-chart" viewBox="0 0 24 24"><path d="M4 20V10M11 20V4M18 20v-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M3 20h18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="icon-tree" viewBox="0 0 24 24"><path d="M12 21v-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M12 15c-3.5 0-6-2.3-6-5.4C6 6.3 8.7 3.5 12 3s6 3.3 6 6.6c0 3.1-2.5 5.4-6 5.4Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="icon-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 11V8a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="icon-sparkle" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8Z" fill="currentColor"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8Z" fill="currentColor"/></symbol>
+  <symbol id="icon-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="icon-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m-9 0 1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="icon-back" viewBox="0 0 24 24"><path d="M14.5 5 8 12l6.5 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="icon-chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="icon-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="icon-book" viewBox="0 0 24 24"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H12v16H5.5A1.5 1.5 0 0 1 4 18.5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M20 5.5A1.5 1.5 0 0 0 18.5 4H12v16h6.5a1.5 1.5 0 0 0 1.5-1.5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="icon-tag" viewBox="0 0 24 24"><path d="M11.5 4H5.8A1.8 1.8 0 0 0 4 5.8v5.7c0 .5.2.9.5 1.3l8 8c.7.7 1.9.7 2.6 0l6-6c.7-.7.7-1.9 0-2.6l-8-8c-.4-.3-.8-.5-1.3-.5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="8.7" cy="8.7" r="1.3" fill="currentColor"/></symbol>
+  <symbol id="icon-play" viewBox="0 0 24 24"><path d="M7 5v14l12-7Z" fill="currentColor"/></symbol>
+  <symbol id="icon-pause" viewBox="0 0 24 24"><path d="M7 5h3v14H7zM14 5h3v14h-3z" fill="currentColor"/></symbol>
+  <symbol id="icon-stop" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor"/></symbol>
+  <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="m20 20-3.8-3.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+</defs></svg>
+
+<!-- ============================= -->
+<!-- SPLASH INTRO (plays once per page load, before the welcome/app) -->
+<!-- ============================= -->
+<div id="splash-screen" class="splash-screen" aria-hidden="true">
+  <div class="ambient-blobs"></div>
+  <div class="splash-content" id="splash-content">
+    <img src="assets/nexus-icon.svg" alt="" class="splash-icon">
+    <span class="splash-wordmark">Nexus</span>
+  </div>
+</div>
+
+<!-- ============================= -->
+<!-- TOAST CONTAINER (global)      -->
+<!-- ============================= -->
+<div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+<!-- ============================= -->
+<!-- TUTORIAL OVERLAY (global)     -->
+<!-- ============================= -->
+<div id="tutorial-overlay" class="tutorial-overlay hidden">
+  <div id="tutorial-spotlight" class="tutorial-spotlight"></div>
+  <div id="tutorial-card" class="tutorial-card">
+    <div class="tutorial-eyebrow">Quick tour <span id="tutorial-step-count"></span></div>
+    <h3 id="tutorial-title"></h3>
+    <p id="tutorial-text"></p>
+    <div class="tutorial-actions">
+      <button type="button" id="tutorial-skip-btn" class="btn btn-ghost btn-small">Skip tour</button>
+      <button type="button" id="tutorial-next-btn" class="btn btn-primary btn-small">Next</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================= -->
+<!-- WELCOME / FIRST-TIME WIZARD   -->
+<!-- ============================= -->
+<div id="welcome-screen" class="welcome-screen hidden">
+  <div class="ambient-blobs"></div>
+  <div class="welcome-card">
+    <div class="welcome-logo">Nexus</div>
+
+    <div class="welcome-dots" id="welcome-dots" aria-hidden="true">
+      <span class="welcome-dot active"></span><span class="welcome-dot"></span><span class="welcome-dot"></span>
+    </div>
+
+    <!-- Step 1: name + theme -->
+    <section class="welcome-step" data-step="1">
+      <h1>Welcome to Nexus</h1>
+      <p class="welcome-sub">Your AI-assisted academic mentor. Let's set a few things up.</p>
+      <div class="form-field">
+        <label for="welcome-name">What should we call you?</label>
+        <input type="text" id="welcome-name" name="name" placeholder="Your name" autocomplete="off">
+      </div>
+      <div class="form-field">
+        <label>Theme</label>
+        <div class="theme-choice-group" role="radiogroup" aria-label="Theme preference">
+          <label class="theme-choice">
+            <input type="radio" name="theme" value="dark" checked>
+            <span class="theme-swatch theme-swatch-dark" aria-hidden="true"></span>
+            <span>Arcade Purple (Dark)</span>
+          </label>
+          <label class="theme-choice">
+            <input type="radio" name="theme" value="light">
+            <span class="theme-swatch theme-swatch-light" aria-hidden="true"></span>
+            <span>Plan-Arcadia (Light)</span>
+          </label>
+        </div>
+      </div>
+      <div class="form-field form-field-inline">
+        <label for="welcome-gamification">Enable gamification (XP, levels, badges)</label>
+        <input type="checkbox" id="welcome-gamification" name="gamification" checked>
+      </div>
+      <div class="welcome-actions">
+        <span></span>
+        <button type="button" class="btn btn-primary" data-wizard-next="2">Continue</button>
+      </div>
+    </section>
+
+    <!-- Step 2: guided first assignment -->
+    <section class="welcome-step hidden" data-step="2">
+      <h1>Let's add your first assignment</h1>
+      <p class="welcome-sub">This is real data you'll actually use — not a demo. Fill in what you know; you can edit it anytime later.</p>
+      <div class="form-field">
+        <label for="welcome-assignment-title">Assignment title *</label>
+        <input type="text" id="welcome-assignment-title" placeholder="e.g. Marketing Case Study" maxlength="120">
+        <p class="field-hint">The name you'll recognize it by on your dashboard.</p>
+      </div>
+      <div class="form-row">
+        <div class="form-field">
+          <label for="welcome-assignment-subject">Subject or course *</label>
+          <input type="text" id="welcome-assignment-subject" placeholder="e.g. Marketing, Python, HTML/CSS" maxlength="60">
+        </div>
+        <div class="form-field">
+          <label for="welcome-assignment-domain">Category (optional)</label>
+          <input type="text" id="welcome-assignment-domain" placeholder="e.g. Business, Tech, Design" maxlength="40">
+        </div>
+      </div>
+      <p class="field-hint">Subjects and categories are entirely up to you — Nexus will group your dashboard by whichever you use.</p>
+      <div class="form-field">
+        <label for="welcome-assignment-deadline">Deadline *</label>
+        <input type="datetime-local" id="welcome-assignment-deadline">
+      </div>
+      <div class="welcome-actions">
+        <button type="button" class="btn btn-ghost" data-wizard-back="1">Back</button>
+        <div class="welcome-actions-right">
+          <button type="button" class="btn btn-ghost" id="welcome-skip-assignment-btn">I'll add my own later</button>
+          <button type="button" class="btn btn-primary" id="welcome-create-assignment-btn">Add it &amp; continue</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 3: API key -->
+    <section class="welcome-step hidden" data-step="3">
+      <h1>Almost there!</h1>
+      <p class="welcome-sub">Get a free key to unlock your AI study mentor — or skip this and add it anytime from Settings.</p>
+      <a class="btn btn-secondary welcome-key-link" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">
+        <svg class="icon" width="18" height="18"><use href="#icon-sparkle"/></svg> Get a free Gemini API key
+      </a>
+      <div class="form-field">
+        <label for="welcome-api-key">Paste your key here</label>
+        <input type="password" id="welcome-api-key" autocomplete="off" placeholder="AIzaSy...">
+      </div>
+      <div class="welcome-actions">
+        <button type="button" class="btn btn-ghost" data-wizard-back="2">Back</button>
+        <div class="welcome-actions-right">
+          <button type="button" class="btn btn-ghost" id="welcome-skip-key-btn">Skip for now</button>
+          <button type="button" class="btn btn-primary" id="welcome-finish-btn">Enter your dashboard</button>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<!-- ============================= -->
+<!-- APP SHELL                     -->
+<!-- ============================= -->
+<div id="app" class="app-shell hidden">
+
+  <nav class="app-sidebar" aria-label="Main navigation">
+    <div class="sidebar-logo">Nexus</div>
+    <button class="sidebar-nav-btn active" id="nav-dashboard-btn" data-view="dashboard">
+      <svg class="icon" width="20" height="20"><use href="#icon-home"/></svg><span>Dashboard</span>
+    </button>
+    <button class="sidebar-nav-btn" id="nav-progress-btn" data-view="history">
+      <svg class="icon" width="20" height="20"><use href="#icon-chart"/></svg><span>Progress</span>
+    </button>
+    <button class="sidebar-nav-btn" id="nav-timer-btn" data-view="timer">
+      <svg class="icon" width="20" height="20"><use href="#icon-tree"/></svg><span>Study Timer</span>
+    </button>
+    <button class="sidebar-nav-btn" id="nav-settings-btn" data-view="settings">
+      <svg class="icon" width="20" height="20"><use href="#icon-gear"/></svg><span>Settings</span>
+    </button>
+  </nav>
+
+  <div class="app-content">
+    <header class="app-header">
+      <div class="header-search">
+        <svg class="icon search-icon" width="18" height="18"><use href="#icon-search"/></svg>
+        <label for="search-input" class="sr-only">Search assignments</label>
+        <input type="search" id="search-input" placeholder="Search assignments, subjects, feedback…" autocomplete="off">
+      </div>
+      <button id="theme-toggle-btn" class="icon-btn" aria-label="Toggle dark or light theme" title="Toggle theme">
+        <svg class="icon icon-moon-mark" width="20" height="20"><use href="#icon-moon"/></svg>
+        <svg class="icon icon-sun-mark" width="20" height="20"><use href="#icon-sun"/></svg>
+      </button>
+    </header>
+
+    <!-- ============================= -->
+    <!-- DASHBOARD VIEW                -->
+    <!-- ============================= -->
+    <main id="view-dashboard" class="view">
+      <section class="greeting">
+        <h1 id="greeting-text">Good evening.</h1>
+        <p id="greeting-sub">Here's what needs your attention.</p>
+      </section>
+
+      <section class="level-widget hidden" id="level-widget"></section>
+
+      <section class="summary-cards" id="summary-cards" aria-label="Assignment statistics"></section>
+
+      <section class="next-move-section" id="next-move-section">
+        <div class="next-move-card" id="next-move-card"></div>
+      </section>
+
+      <section class="assignments-section">
+        <div class="assignments-toolbar">
+          <div class="filter-tabs" id="filter-tabs" role="tablist" aria-label="Filter assignments">
+            <button class="filter-tab active" data-filter="all" role="tab" aria-selected="true">All</button>
+            <button class="filter-tab" data-filter="active" role="tab" aria-selected="false">Active</button>
+            <button class="filter-tab" data-filter="due-soon" role="tab" aria-selected="false">Due Soon</button>
+            <button class="filter-tab" data-filter="review-required" role="tab" aria-selected="false">Review Required</button>
+            <button class="filter-tab" data-filter="completed" role="tab" aria-selected="false">Completed</button>
+            <button class="filter-tab" data-filter="overdue" role="tab" aria-selected="false">Overdue</button>
+            <button class="filter-tab" data-filter="locked" role="tab" aria-selected="false"><svg class="icon" width="13" height="13"><use href="#icon-lock"/></svg> Locked</button>
+          </div>
+
+          <div class="toolbar-right">
+            <div class="dropdown" id="groupby-dropdown">
+              <button type="button" class="dropdown-trigger" id="groupby-trigger" aria-haspopup="listbox" aria-expanded="false">
+                <span id="groupby-trigger-label">Group: Subject</span>
+                <svg class="icon" width="16" height="16"><use href="#icon-chevron"/></svg>
+              </button>
+              <ul class="dropdown-list hidden" id="groupby-list" role="listbox" tabindex="-1">
+                <li role="option" data-value="subject" aria-selected="true">Group: Subject</li>
+                <li role="option" data-value="domain">Group: Category</li>
+                <li role="option" data-value="none">No grouping</li>
+              </ul>
+            </div>
+            <div class="dropdown" id="sort-dropdown">
+              <button type="button" class="dropdown-trigger" id="sort-trigger" aria-haspopup="listbox" aria-expanded="false">
+                <span id="sort-trigger-label">Sort: Deadline</span>
+                <svg class="icon" width="16" height="16"><use href="#icon-chevron"/></svg>
+              </button>
+              <ul class="dropdown-list hidden" id="sort-list" role="listbox" tabindex="-1">
+                <li role="option" data-value="deadline" aria-selected="true">Sort: Deadline</li>
+                <li role="option" data-value="recently-added">Sort: Recently added</li>
+                <li role="option" data-value="recently-updated">Sort: Recently updated</li>
+                <li role="option" data-value="status">Sort: Status</li>
+              </ul>
+            </div>
+            <button id="add-assignment-btn" class="btn btn-primary"><svg class="icon" width="16" height="16"><use href="#icon-plus"/></svg> Add Assignment</button>
+          </div>
+        </div>
+
+        <div id="assignment-list" class="assignment-list"></div>
+
+        <div id="empty-state" class="empty-state hidden">
+          <svg class="icon empty-state-icon" width="48" height="48"><use href="#icon-book"/></svg>
+          <h2>Your workspace is empty</h2>
+          <p>Your assignments will appear here.</p>
+          <button id="empty-add-btn" class="btn btn-primary"><svg class="icon" width="16" height="16"><use href="#icon-plus"/></svg> Add Your First Assignment</button>
+        </div>
+      </section>
+    </main>
+
+    <!-- ============================= -->
+    <!-- ASSIGNMENT DETAIL VIEW        -->
+    <!-- ============================= -->
+    <main id="view-detail" class="view hidden">
+      <button id="back-to-dashboard-btn" class="btn btn-ghost back-btn"><svg class="icon" width="16" height="16"><use href="#icon-back"/></svg> Back to dashboard</button>
+      <div id="detail-content"></div>
+    </main>
+
+    <!-- ============================= -->
+    <!-- HISTORY / PROGRESS VIEW       -->
+    <!-- ============================= -->
+    <main id="view-history" class="view hidden">
+      <h1>Your progress</h1>
+      <div id="history-content"></div>
+    </main>
+
+    <!-- ============================= -->
+    <!-- STUDY TIMER VIEW              -->
+    <!-- ============================= -->
+    <main id="view-timer" class="view hidden">
+      <h1>Study Timer</h1>
+      <p class="view-sub">Watch a tree grow while you focus. Every finished session is logged below.</p>
+      <div id="timer-content"></div>
+    </main>
+
+    <!-- ============================= -->
+    <!-- SETTINGS VIEW                 -->
+    <!-- ============================= -->
+    <main id="view-settings" class="view hidden">
+      <h1>Settings</h1>
+      <div id="settings-content"></div>
+    </main>
+  </div>
+</div>
+
+<!-- ============================= -->
+<!-- MODAL: ADD / EDIT ASSIGNMENT  -->
+<!-- ============================= -->
+<div id="modal-assignment" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modal-assignment-title">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modal-assignment-title">Add Assignment</h2>
+      <button class="modal-close-btn" data-close-modal="modal-assignment" aria-label="Close"><svg class="icon" width="16" height="16"><use href="#icon-close"/></svg></button>
+    </div>
+    <form id="assignment-form" class="modal-body">
+      <input type="hidden" id="assignment-id-field">
+      <div class="form-field">
+        <label for="field-title">Title *</label>
+        <input type="text" id="field-title" required maxlength="120">
+      </div>
+      <div class="form-field">
+        <label for="field-description">Description</label>
+        <textarea id="field-description" rows="3" maxlength="2000"></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-field">
+          <label for="field-domain">Category</label>
+          <input type="text" id="field-domain" maxlength="40" placeholder="e.g. Business, Design, Tech" list="domain-suggestions">
+          <datalist id="domain-suggestions"></datalist>
+        </div>
+        <div class="form-field">
+          <label for="field-subject">Subject / course</label>
+          <input type="text" id="field-subject" maxlength="60" list="subject-suggestions">
+          <datalist id="subject-suggestions"></datalist>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-field">
+          <label for="field-posted-by">Posted by</label>
+          <input type="text" id="field-posted-by" maxlength="60">
+        </div>
+        <div class="form-field">
+          <label for="field-posted-date">Posted date</label>
+          <input type="date" id="field-posted-date">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-field">
+          <label for="field-deadline">Deadline *</label>
+          <input type="datetime-local" id="field-deadline" required>
+        </div>
+        <div class="form-field">
+          <label for="field-effort">Estimated effort (optional)</label>
+          <input type="text" id="field-effort" placeholder="e.g. 3 hours" maxlength="40">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-field">
+          <label for="field-status">Status</label>
+          <select id="field-status">
+            <option value="not-started">Not started</option>
+            <option value="in-progress">In progress</option>
+            <option value="submitted">Submitted</option>
+            <option value="completed">Completed</option>
+            <option value="locked">Locked</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-field">
+        <label for="field-notes">Notes (optional)</label>
+        <textarea id="field-notes" rows="2" maxlength="1000"></textarea>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" data-close-modal="modal-assignment">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save assignment</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============================= -->
+<!-- MODAL: REVIEW                 -->
+<!-- ============================= -->
+<div id="modal-review" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modal-review-title">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modal-review-title">Record review</h2>
+      <button class="modal-close-btn" data-close-modal="modal-review" aria-label="Close"><svg class="icon" width="16" height="16"><use href="#icon-close"/></svg></button>
+    </div>
+    <form id="review-form" class="modal-body">
+      <div class="form-field">
+        <label>Card status</label>
+        <div class="card-choice-group" role="radiogroup" aria-label="Review card status">
+          <label class="card-choice card-choice-green">
+            <input type="radio" name="review-card" value="green"> <span class="status-dot dot-green"></span> <span>Green</span>
+          </label>
+          <label class="card-choice card-choice-yellow">
+            <input type="radio" name="review-card" value="yellow"> <span class="status-dot dot-yellow"></span> <span>Yellow</span>
+          </label>
+          <label class="card-choice card-choice-red">
+            <input type="radio" name="review-card" value="red"> <span class="status-dot dot-red"></span> <span>Red</span>
+          </label>
+          <label class="card-choice card-choice-none">
+            <input type="radio" name="review-card" value="none" checked> <span class="status-dot dot-none"></span> <span>No review yet</span>
+          </label>
+        </div>
+      </div>
+      <div class="form-field">
+        <label for="field-review-feedback">Reviewer feedback</label>
+        <textarea id="field-review-feedback" rows="5" maxlength="3000" placeholder="Paste or type the reviewer's feedback here…"></textarea>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" data-close-modal="modal-review">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save review</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============================= -->
+<!-- MODAL: GENERIC CONFIRM        -->
+<!-- ============================= -->
+<div id="modal-confirm" class="modal-overlay hidden" role="alertdialog" aria-modal="true" aria-labelledby="modal-confirm-title">
+  <div class="modal modal-small">
+    <div class="modal-header">
+      <h2 id="modal-confirm-title">Are you sure?</h2>
+      <button class="modal-close-btn" data-close-modal="modal-confirm" aria-label="Close"><svg class="icon" width="16" height="16"><use href="#icon-close"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <p id="modal-confirm-message"></p>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" data-close-modal="modal-confirm">Cancel</button>
+        <button type="button" id="modal-confirm-action-btn" class="btn btn-danger">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
